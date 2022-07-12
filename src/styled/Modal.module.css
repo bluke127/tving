@@ -1,0 +1,35 @@
+.modal_wrap {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+.modal {
+  width: 50%;
+  height: 30%;
+  background-color: #fff;
+  border: 1px solid #000;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.btn_wrap {
+  width: 100%;
+  text-align: center;
+  line-height: 50px;
+  background-color: rgba(127, 134, 28, 0.5);
+  border: 1px solid #000;
+  bottom: 0;
+  position: absolute;
+}
+input:hover {
+  background-color: rgba(127, 134, 28, 1);
+  color: #fff;
+}
+.warn_msg {
+  color: red;
+  text-align: center;
+}
