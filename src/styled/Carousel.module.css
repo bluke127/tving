@@ -1,0 +1,53 @@
+.screen {
+  position: relative;
+  padding-bottom: 50px;
+  margin: 0 auto;
+  overflow: hidden;
+  border: 3px solid red;
+}
+.film {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+.scene {
+  width: 100%;
+  height: 100%;
+  float: left;
+  display: flex;
+  justify-content: center;
+}
+.scene .img {
+  margin: 0 auto;
+  width: 100%;
+  height: auto;
+}
+
+.scene .img {
+  margin: 0 auto;
+  width: auto;
+  height: 100%;
+}
+.btn_wrap button {
+  transform: translateY(-50%);
+  position: absolute;
+  top: 50%;
+}
+.prev {
+  left: 0;
+}
+.next {
+  right: 0;
+}
+.index_wrap {
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  display: flex;
+  line-height: 50px;
+}
+.index_wrap li {
+  width: 10%;
+  text-align: center;
+  color: #fff;
+}

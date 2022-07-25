@@ -1,0 +1,10 @@
+.search_img {
+  width: 100px;
+  height: 100px;
+  position: fixed;
+  bottom: 10%;
+  right: 5%;
+}
+.search_input {
+  transition: width ease 1s;
+}

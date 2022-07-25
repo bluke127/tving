@@ -1,0 +1,81 @@
+@charset "UTF-8";
+
+/** 한글폰트 */
+@font-face {
+  font-family: 'AppleSDGothicNeoB00';
+  font-style: normal;
+  font-weight: normal;
+  font-display: swap;
+  src: url('AppleSDGothicNeoB/AppleSDGothicNeoB.woff2') format('woff2'),
+    url('AppleSDGothicNeoB/AppleSDGothicNeoB.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'AppleSDGothicNeoEB00';
+  font-style: normal;
+  font-weight: normal;
+  font-display: swap;
+  src: url('AppleSDGothicNeoEB/AppleSDGothicNeoEB.woff2') format('woff2'),
+    url('AppleSDGothicNeoEB/AppleSDGothicNeoEB.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'AppleSDGothicNeoH00';
+  font-style: normal;
+  font-weight: normal;
+  font-display: swap;
+  src: url('AppleSDGothicNeoH/AppleSDGothicNeoH.woff2') format('woff2'),
+    url('AppleSDGothicNeoH/AppleSDGothicNeoH.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'AppleSDGothicNeoL00';
+  font-style: normal;
+  font-weight: normal;
+  font-display: swap;
+  src: url('AppleSDGothicNeoL/AppleSDGothicNeoL.woff2') format('woff2'),
+    url('AppleSDGothicNeoL/AppleSDGothicNeoL.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'AppleSDGothicNeoM00';
+  font-style: normal;
+  font-weight: normal;
+  font-display: swap;
+  src: url('AppleSDGothicNeoM/AppleSDGothicNeoM.woff2') format('woff2'),
+    url('AppleSDGothicNeoM/AppleSDGothicNeoM.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'AppleSDGothicNeoR00';
+  font-style: normal;
+  font-weight: normal;
+  font-display: swap;
+  src: url('AppleSDGothicNeoR/AppleSDGothicNeoR.woff2') format('woff2'),
+    url('AppleSDGothicNeoR/AppleSDGothicNeoR.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'AppleSDGothicNeoT00';
+  font-style: normal;
+  font-weight: normal;
+  font-display: swap;
+  src: url('AppleSDGothicNeoT/AppleSDGothicNeoT.woff2') format('woff2'),
+    url('AppleSDGothicNeoT/AppleSDGothicNeoT.woff') format('woff');
+}
+
+@font-face {
+  font-family: NanumSquareEB;
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('NanumSquareB/NanumSquareExtraBold.ttf') format('woff');
+}
+
+@font-face {
+  font-family: NanumSquareB;
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('NanumSquareB/NanumSquareBold.ttf') format('woff');
+}

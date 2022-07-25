@@ -1,7 +1,14 @@
 .wrap {
   width: 100%;
   height: 100%;
-  background: lightcyan;
+}
+.input_wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+input {
+  line-height: 2em;
 }
 .text_center {
   text-align: center;

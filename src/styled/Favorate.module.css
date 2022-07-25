@@ -1,0 +1,14 @@
+.img {
+  /* width: 100%; */
+  width: 150px;
+  height: 150px;
+  justify-content: center;
+  align-items: center;
+  display: inline-block;
+}
+.favorate_img {
+  width: 100%;
+}
+.img.un_active {
+  background-color: #fff;
+}

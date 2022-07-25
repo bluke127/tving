@@ -1,0 +1,9 @@
+.header_wrap {
+  width: 100%;
+  line-height: 20vh;
+}
+.header_wrap ul {
+  display: flex;
+  flex-direction: row;
+  gap: 1em;
+}

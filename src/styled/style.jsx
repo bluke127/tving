@@ -28,3 +28,10 @@ export const ColorButtonStyle = styled(BaseButton)`
   background: ${({ backgroundColor }) => backgroundColor};
   color: ${({ color }) => color};
 `;
+
+export const CheckBoxStyle = styled.input`
+  background: ${({ backgroundColor }) => backgroundColor};
+  color: ${({ color }) => color};
+  width: ${({ width }) => width};
+  height: ${({ height }) => height};
+`;

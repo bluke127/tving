@@ -1,80 +1,201 @@
-import React, { Component, useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Modal from 'components/Modal.tsx';
+import { getLogin } from 'services/account';
+import Modal from 'components/Modal';
 import styles from 'styled/Login.module.css';
-import ModuleStyles from 'styled/Modal.module.css';
-import DivInFlexItem from 'styled/commonStyled';
-import Circle from 'styled/circle';
-
+import ColorButton from 'components/ColorButton';
 import {
-  RecoilRoot,
-  atom,
-  selector,
   useRecoilState,
   useRecoilValue,
+  useSetRecoilState,
+  useResetRecoilState,
 } from 'recoil';
-import { rowState, columnState, modalFlagState } from '../atoms';
+import {
+  modalFlagState,
+  countState,
+  userIdState,
+  currentTargetState,
+  countStateSelector,
+  currentTargetSelector,
+} from '../atoms';
 
-export default function Start() {
-  const [modalFlag, setModalFlagState] = useRecoilState(modalFlagState);
+export default function Login() {
+  const location = useNavigate();
+  const [modalFlag, setModalFlagState] =
+    useRecoilState<boolean>(modalFlagState);
+
+  const [currentTarget, setCurrentTarget] = useRecoilState(currentTargetState);
+  const [userId, setUserId] = useRecoilState(userIdState);
+  const inputClick = (e: React.MouseEvent<HTMLElement | null | number>) => {
+    setCurrentTarget(e.currentTarget as HTMLElement);
+  };
   const showModal = () => {
+    if (!id && !password) {
+      setWarnMsg(`아이디를 입력해주세요!`);
+    }
     setModalFlagState(true);
   };
-  let idReg: RegExp = /^[a-z]+[a-z0-9]{5,19}$/g;
-  let passwordReg: RegExp = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+  const idReg: RegExp = /^[a-z]+[a-z0-9]{5,19}$/g;
+  const passwordReg: RegExp = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
   const [id, setId] = useState<string>('');
-  const [password, setPassword] = useState<string | number>('');
-  const [warnMsg, setWarnMsg] = useState(null);
-  const insertId = (e, func) => {
-    if (idReg.test(e.target.value)) {
-      idReg.test(e.target.value);
-      func(e.target.value);
-    } else {
-      setWarnMsg('아이디 형식이 올바르지 않습니다.');
-    }
+  const [password, setPassword] = useState<string>('');
+  useEffect(() => {
+    console.log(password);
+  }, [password]);
+  const currentTargetId = useRef<HTMLInputElement>(null);
+  const currentTargetPassword = useRef<HTMLInputElement>(null);
+
+  let [warnMsgConfig, setWarnMsgConfig] = useState<{
+    id: {
+      string: string;
+      value: string;
+      reg: boolean;
+    };
+    password: {
+      string: string;
+      value: string;
+      reg: boolean;
+    };
+  }>({
+    id: { string: '아이디', value: id, reg: true },
+    password: { string: '비밀번호', value: password, reg: true },
+  });
+  const [warnMsg, setWarnMsg] = useState<string | null>(null);
+  const insertId = (e: React.ChangeEvent) => {
+    let value =
+      typeof e === 'object' ? (e.target as HTMLInputElement).value : e;
+    setId(value);
   };
-  const insertPass = (e, func) => {
-    if (passwordReg.test(e.target.value)) {
-      passwordReg.test(e.target.value);
-      func(e.target.value);
-    } else {
-      setWarnMsg('비밀번호 형식이 올바르지 않습니다.');
-    }
+  const insertPassword = (e: React.ChangeEvent) => {
+    let value =
+      typeof e === 'object' ? (e.target as HTMLInputElement).value : e;
+    setPassword(value);
   };
 
+  const checkId = useMemo(() => {
+    setWarnMsgConfig({
+      ...warnMsgConfig,
+      id: { ...warnMsgConfig.id, value: id, reg: idReg.test(id) },
+    });
+  }, [id]);
+  const checkPassword = useMemo(() => {
+    setWarnMsgConfig({
+      ...warnMsgConfig,
+      password: {
+        ...warnMsgConfig.password,
+        value: password,
+        reg: passwordReg.test(password),
+      },
+    });
+  }, [password]);
+  useEffect(() => {
+    const obj = Object.entries(warnMsgConfig);
+    for (let i = 0; i < obj.length; i++) {
+      let [key, objValue] = obj[i];
+      console.log(warnMsgConfig, obj);
+      if (!objValue.value) {
+        setWarnMsg(`${objValue.string}을 입력해주세요!`);
+        return;
+      } else if (!objValue.reg) {
+        console.log(objValue.value, idReg, id, '>>');
+        setWarnMsg(`${objValue.string} 형식이 올바르지 않습니다.`);
+        return;
+      }
+      setWarnMsg('');
+    }
+  }, [id, password]);
+
+  useEffect(() => {
+    setWarnMsg(null);
+  }, []);
+  const login = async () => {
+    if (!id && !password) {
+      setWarnMsg('아이디을 입력해주세요!');
+    }
+    const response = await getLogin();
+    console.log(response);
+
+    location('/main/tving');
+    sessionStorage.setItem('userInfo', id);
+  };
+  // const counterHandler = useSetRecoilState(countState); // 값만 변경 시키기
+  // const resetCounter = useResetRecoilState(countState); // 디폴트값으로 값 변경
+
+  // const [counter, setCoounter] = useRecoilState(countState);
+  // const currentCount = useRecoilValue(countState); // 읽기 전용!
+  // const counterHandler = useSetRecoilState(countState); // 값만 변경 시키기
+  // const resetCounter = useResetRecoilState(countState); // 디폴트값으로 값 변경
+  // const plusCount = () => {
+  //   counterHandler(pre => pre + 1);
+  // };
+  // const minusCount = () => {
+  //   counterHandler(pre => pre - 1);
+  // };
   return (
     <>
-      <div className={styles.wrap} onClick={showModal}>
-        오목 드가자
+      <Modal
+        warnMsg={warnMsg}
+        button={[
+          {
+            text: '확인',
+            backgroundColor: 'blue',
+            color: '#fff',
+          },
+          { text: '취소', backgroundColor: 'lightGray', color: '#000' },
+        ]}
+      ></Modal>
+      {/* <button onClick={() => setCounter((num) => num + 1)}>+</button>
+      <button onClick={() => setCounter((num) => num - 1)}>-</button> */}
+      {/* <button onClick={plusCount}>+</button>
+      <button onClick={minusCount}>-</button>
+      <button onClick={resetCounter}>reset</button>
+      <button
+        onClick={() => {
+          location('/tving');
+        }}
+      >
+        tt
+      </button> */}
+      {/* </> */}
+      <div className={styles.wrap}>
+        로그인
+        <div className={styles.input_wrap}>
+          <div>
+            <input
+              type="text"
+              value={id}
+              onClick={inputClick}
+              onChange={insertId}
+              ref={currentTargetId}
+            />
+            {currentTarget === currentTargetId.current ? (
+              <button onClick={() => setId('')}>x</button>
+            ) : null}
+          </div>
+          <div>
+            <input
+              type="text"
+              value={password}
+              onClick={inputClick}
+              onChange={insertPassword}
+              ref={currentTargetPassword}
+            />
+            {currentTarget === currentTargetPassword.current ? (
+              <button onClick={() => setPassword('')}>x</button>
+            ) : null}
+          </div>
+          <div>{warnMsg}</div>
+          <ColorButton
+            onClick={() =>
+              warnMsg || id === '' || password === '' ? showModal() : login()
+            }
+            backgroundColor={'red'}
+            color={'yellow'}
+          >
+            로그인
+          </ColorButton>
+        </div>
       </div>
-      {modalFlag ? (
-        <Modal warnMsg={warnMsg}>
-          (
-          <>
-            <div className={styles.text_center}>Row와 Column은?</div>
-            <DivInFlexItem>
-              <div className={ModuleStyles.twin_input_wrap}>
-                <Circle
-                  width={'5vw'}
-                  maxLength="1"
-                  borderRadius={'75px'}
-                  onInput={event => insertNumber(event, setRow)}
-                  value={row}
-                ></Circle>
-                x
-                <Circle
-                  width={'4vw'}
-                  maxLength="1"
-                  value={column}
-                  borderRadius={'75px'}
-                  onInput={event => insertNumber(event, setRow)}
-                ></Circle>
-              </div>
-            </DivInFlexItem>
-          </>
-          )
-        </Modal>
-      ) : null}
     </>
   );
 }
