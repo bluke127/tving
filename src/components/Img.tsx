@@ -9,10 +9,10 @@ import {
   useSetRecoilState,
   useResetRecoilState,
 } from 'recoil';
-import styled from 'styled-components';
+import styled from 'styled/Img.module.css';
 import { loadingState, headerState } from '../atoms';
 
-export default function Img(props) {
+export default function Img(props: any) {
   const [loading, setLoading] = useState(true);
   const imgRef = useRef();
   const onLoad = () => {

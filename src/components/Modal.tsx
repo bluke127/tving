@@ -12,15 +12,15 @@ import { modalFlagState } from '../atoms';
 import Portal from 'utill/Portal';
 import { useNavigate } from 'react-router';
 type ModalProps = {
-  message?: string | null;
-  warnMsg: string | null;
-  children?: string | null;
+  message?: string | number | null;
+  warnMsg: string | number | null;
+  children?: string | number | null;
   button: buttonType[];
 };
 type buttonType = {
   color: string | null;
   backgroundColor: string | null;
-  func?: Function | null;
+  func?: Function;
   text: string | null;
 };
 export default function Modal({
@@ -29,9 +29,9 @@ export default function Modal({
   children,
   button,
 }: ModalProps) {
-  const [modalMsg, setModalMsg] = useState(null);
+  const [modalMsg, setModalMsg] = useState<string | number | null>(null);
   useEffect(() => {
-    warnMsg ? setModalMsg(warnMsg) : setModalMsg(message);
+    warnMsg ? setModalMsg(warnMsg) : setModalMsg(message as string);
   }, [warnMsg]);
   const [modalFlag, setModalFlagState] = useRecoilState(modalFlagState);
 
@@ -52,7 +52,7 @@ export default function Modal({
                     color={buttonItem.color}
                     backgroundColor={buttonItem.backgroundColor}
                     onClick={() => {
-                      return buttonItem.func ? button.func : null;
+                      return buttonItem.func ? buttonItem.func : null;
                     }}
                   >
                     {buttonItem.text}

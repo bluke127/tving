@@ -8,20 +8,28 @@ import {
   useRecoilValue,
 } from 'recoil';
 import Img from 'components/Img';
+import { unknownObj } from 'types';
 export default function Carousel({
   list,
   width = '500px',
   height = '300px',
   setList,
+  setLoading,
+}: {
+  list: any;
+  width?: any;
+  height?: any;
+  setList?: any;
+  setLoading?: any;
 }) {
   const screen = useRef(null);
-  const film = useRef(null);
+  const film = useRef<HTMLUListElement>(null);
   const scene = useRef([]);
-  const addScene = el => {
-    if (el) scene.current.push(el);
+  const addScene = (el: any) => {
+    if (el) (scene.current as any[]).push(el);
   };
   const prev = () => {
-    film.current.style.transition = 'all 0.5s ease';
+    (film.current as HTMLElement).style.transition = 'all 0.5s ease';
     let indexV;
 
     if (((-1 * 100) / list.length) * (index - 1) >= 10) {
@@ -29,20 +37,22 @@ export default function Carousel({
     } else {
       indexV = index - 1;
     }
-    film.current.style.transform = `translateX(${
+
+    (film.current as HTMLElement).style.transform = `translateX(${
       ((-1 * 100) / list.length) * indexV
     }%)`;
     setIndex(indexV);
   };
   const next = () => {
-    film.current.style.transition = 'all 0.5s ease';
+    (film.current as HTMLElement).style.transition = 'all 0.5s ease';
     let indexV;
     if (((-1 * 100) / list.length) * (index + 1) <= -95) {
       indexV = index;
     } else {
       indexV = index + 1;
     }
-    film.current.style.transform = `translateX(${
+
+    (film.current as HTMLElement).style.transform = `translateX(${
       ((-1 * 100) / list.length) * indexV
     }%)`;
     setIndex(indexV);
@@ -56,15 +66,16 @@ export default function Carousel({
       listV.unshift(ele);
       setList(listV);
       setFirstFlag(false);
-      film.current.style.marginLeft = `-${index * 100}%`;
+
+      (film.current as HTMLElement).style.marginLeft = `-${index * 100}%`;
     }
   }, [list]);
   useEffect(() => {
-    film.current.style.transform = `translateX(${
+    (film.current as HTMLElement).style.transform = `translateX(${
       ((-1 * 100) / list.length) * index
     }%)`;
   }, [index]);
-  const goIndex = idx => {
+  const goIndex = (idx: number) => {
     setIndex(idx);
   };
   return (
@@ -75,12 +86,12 @@ export default function Carousel({
         style={{ width: 100 * list.length + '%' }}
       >
         {list.length > 0
-          ? list.map((e, index) => (
+          ? list.map((e: any, index: any) => (
               <li
                 ref={element => addScene(element)}
                 key={e.backdrop_path}
                 className={styled.scene}
-                style={{ width: screen.current?.clientWidth }}
+                style={{ width: (screen.current! as HTMLElement).clientWidth }}
               >
                 <Img
                   className={styled.img}
@@ -101,7 +112,7 @@ export default function Carousel({
       </div>
       <ul className={styled.index_wrap}>
         {list.length > 0
-          ? list.map((e, index) => (
+          ? list.map((e: unknownObj, index: number) => (
               <li onClick={() => goIndex(index)} key={index}>
                 {index}
               </li>

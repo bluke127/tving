@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Start from 'pages/Login.jsx';
+import Start from 'pages/Login';
 import Layout from 'layout/Layout.jsx';
 
-import Details from 'pages/Details.jsx';
-import Tving from 'pages/Tving.jsx';
+import Details from 'pages/Details';
+import Tving from 'pages/Tving';
 import { useNavigate } from 'react-router-dom';
 import NotFound from 'pages/NotFound';
 import { modalFlagState, countState, userIdState, headerState } from './atoms';

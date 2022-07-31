@@ -14,7 +14,7 @@ export const userIdState = atom({
   default: null,
 });
 
-export const currentTargetState = atom<HTMLElement | null>({
+export const currentTargetState = atom({
   key: 'currentTarget',
   default: null,
 });
@@ -31,7 +31,8 @@ export const favorateSelector = selector({
   get: ({ get }) => {
     return get(JSON.parse(JSON.stringify(favorateState)));
   },
-  set: ({ set }, newValue) => {
+  set: ({ set }, newValue: any) => {
+    localStorage.setItem('favorate', newValue);
     set(favorateState, newValue); // input atom 수정
   },
 });
@@ -68,4 +69,8 @@ export const countStateSelector = selector({
 export const useInfo = atom({
   key: 'id',
   default: null,
+});
+export const offsetState = atom({
+  key: 'offset',
+  default: { movie: 0, tv: 0 },
 });

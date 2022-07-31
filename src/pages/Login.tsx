@@ -4,30 +4,19 @@ import { getLogin } from 'services/account';
 import Modal from 'components/Modal';
 import styles from 'styled/Login.module.css';
 import ColorButton from 'components/ColorButton';
-import {
-  useRecoilState,
-  useRecoilValue,
-  useSetRecoilState,
-  useResetRecoilState,
-} from 'recoil';
-import {
-  modalFlagState,
-  countState,
-  userIdState,
-  currentTargetState,
-  countStateSelector,
-  currentTargetSelector,
-} from '../atoms';
+import { useRecoilState } from 'recoil';
+import { modalFlagState, userIdState, currentTargetState } from '../atoms';
 
 export default function Login() {
   const location = useNavigate();
   const [modalFlag, setModalFlagState] =
     useRecoilState<boolean>(modalFlagState);
 
-  const [currentTarget, setCurrentTarget] = useRecoilState(currentTargetState);
+  const [currentTarget, setCurrentTarget] =
+    useRecoilState<any>(currentTargetState);
   const [userId, setUserId] = useRecoilState(userIdState);
-  const inputClick = (e: React.MouseEvent<HTMLElement | null | number>) => {
-    setCurrentTarget(e.currentTarget as HTMLElement);
+  const inputClick = (e: React.MouseEvent) => {
+    setCurrentTarget(e.currentTarget as HTMLInputElement);
   };
   const showModal = () => {
     if (!id && !password) {
@@ -72,22 +61,22 @@ export default function Login() {
     setPassword(value);
   };
 
-  const checkId = useMemo(() => {
-    setWarnMsgConfig({
-      ...warnMsgConfig,
-      id: { ...warnMsgConfig.id, value: id, reg: idReg.test(id) },
-    });
-  }, [id]);
-  const checkPassword = useMemo(() => {
-    setWarnMsgConfig({
-      ...warnMsgConfig,
-      password: {
-        ...warnMsgConfig.password,
-        value: password,
-        reg: passwordReg.test(password),
-      },
-    });
-  }, [password]);
+  // const checkId = useMemo(() => {
+  //   setWarnMsgConfig({
+  //     ...warnMsgConfig,
+  //     id: { ...warnMsgConfig.id, value: id, reg: idReg.test(id) },
+  //   });
+  // }, [id]);
+  // const checkPassword = useMemo(() => {
+  //   setWarnMsgConfig({
+  //     ...warnMsgConfig,
+  //     password: {
+  //       ...warnMsgConfig.password,
+  //       value: password,
+  //       reg: passwordReg.test(password),
+  //     },
+  //   });
+  // }, [password]);
   useEffect(() => {
     const obj = Object.entries(warnMsgConfig);
     for (let i = 0; i < obj.length; i++) {
