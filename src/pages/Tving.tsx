@@ -7,9 +7,6 @@ import React, {
   useRef,
   useContext,
 } from 'react';
-import { unknownObj } from 'types/index';
-
-import { AxiosResponse } from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled/Tving.module.css';
 import { Element, animateScroll } from 'react-scroll';
@@ -32,32 +29,40 @@ import Search from 'components/Search';
 import Modal from 'components/Modal';
 import Img from 'components/Img';
 import { useOutletContext } from 'react-router-dom';
-
+import { unknownObj } from 'types/index';
 export default function Tving() {
   const locatedView = useOutletContext();
   useEffect(() => {
     //TODO:
     alert(locatedView + 'TVIE');
   }, [locatedView]);
+  const override = css`
+    display: block;
+    margin: 0 auto;
+    border-color: red;
+    background-color: blue !important;
+  `;
   const scroll = animateScroll;
 
   const [modalFlag, setModalFlagState] = useRecoilState(modalFlagState);
   const [offset, setOffset] = useRecoilState(offsetState);
-  let [color, setColor] = useState<string>('#ffffff');
+  let [color, setColor] = useState('#ffffff');
   //movie리스트와 tv리스트를 담아줄 useState
   const [topMovieList, setTopMovieList] = useState<unknownObj[] | null[]>([]);
   const [topTvList, setTopTvList] = useState<unknownObj[] | null[]>([]);
   const [searchType, setSearchType] = useState<string>('movie');
-  const [movieOffset, setMovieOffset] = useState(0);
-  const [tvOffset, setTvOffset] = useState(0);
-  const [scrollY, setScrollY] = useState(0);
+  const [movieOffset, setMovieOffset] = useState<number>(0);
+  const [tvOffset, setTvOffset] = useState<number>(0);
+  const [scrollY, setScrollY] = useState<number>(0);
   const [loading, setLoading] = useRecoilState(loadingState);
   const movieWrap = useRef(null);
   const tvWrap = useRef(null);
-  const [wrapArrayIndex, setWrapArrayIndex] = useState(0);
-  const header = useRecoilValue(headerState);
+  const [wrapArrayIndex, setWrapArrayIndex] = useState<number>(0);
+  const h: { current: HTMLElement } | null = useRecoilValue(headerState);
   const a = useRecoilValue(userIdState);
-
+  const header = useMemo<{ current: null | HTMLElement }>(() => {
+    return h ? { current: h } : { current: null };
+  }, [h]);
   // const location = useNavigate();
   // const id = useRecoilValue(userIdState);
   // useEffect(() => {
@@ -82,35 +87,46 @@ export default function Tving() {
   }, [wrapArrayIndex]);
 
   //상단 header와 movieList의 area, tvList의 area (ref)
-  const wrapArray = useMemo<unknownObj[] | any>(() => {
+  const wrapArray = useMemo(() => {
     console.log(header, movieWrap, tvWrap);
-    setTvOffset((tvWrap.current! as HTMLElement).offsetTop);
-    setMovieOffset((movieWrap.current! as HTMLElement).offsetTop);
+    console.log(
+      (tvWrap.current! as HTMLElement)?.offsetTop,
+      (movieWrap.current! as HTMLElement)?.offsetTop
+    );
+    setTvOffset((tvWrap.current! as HTMLElement)?.offsetTop);
+    setMovieOffset((movieWrap.current! as HTMLElement)?.offsetTop);
     return [header, movieWrap, tvWrap];
   }, [header, movieWrap, tvWrap]);
   useEffect(() => {
     console.log(wrapArray);
   }, [wrapArray]);
-  const [areaName, setAreaName] = useState<string>('header');
+  const [areaName, setAreaName] = useState('header');
   useEffect(() => {
     let v;
-    console.log(header, (header! as HTMLElement).clientHeight, '헤더');
     if (
-      (scrollY >= 0 && scrollY < (header! as HTMLElement).clientHeight) ||
+      (scrollY >= 0 &&
+        scrollY < (header!.current as HTMLElement)?.clientHeight) ||
       !scrollY
     ) {
       v = 'header';
     } else if (
-      scrollY >= (header! as HTMLElement).clientHeight &&
+      scrollY >= (header!.current as HTMLElement)?.clientHeight &&
       scrollY < movieOffset
     ) {
       v = 'movie';
-      // } else if (scrollY >= movieOffset) {
-      //   v = 'tv';
-    } else {
+    } else if (scrollY >= movieOffset) {
       v = 'tv';
     }
-    setAreaName(v);
+    console.log(
+      '화이팅',
+
+      (header!.current as HTMLElement)?.offsetTop,
+      movieOffset,
+      tvOffset,
+      v,
+      areaName
+    );
+    setAreaName(v as string);
   }, [scrollY]);
   const setIndex = useCallback(
     (type: string, index: number) => {
@@ -121,25 +137,27 @@ export default function Tving() {
       if (type === 'ArrowUp') {
         if (i === 0) {
           setWrapArrayIndex(0);
+          alert();
           return scroll.scrollTo(0, {
             top: 0,
             duration: 300,
           });
         }
         i - 1 <= 0 ? (i = 0) : (i = i - 1);
-        scroll.scrollTo((wrapArray[i]!.current as HTMLElement).offsetTop, {
-          top: (wrapArray[i]!.current as HTMLElement).offsetTop,
+        console.log(wrapArray, header);
+        scroll.scrollTo((wrapArray[i]!.current! as HTMLElement)?.offsetTop, {
+          top: (wrapArray[i]!.current! as HTMLElement)?.offsetTop,
           duration: 1000,
         });
-        setScrollY(wrapArray[i]!.current.offsetTop);
+        setScrollY((wrapArray[i]!.current! as HTMLElement)?.offsetTop);
         return setWrapArrayIndex(i);
       } else if (type === 'ArrowDown') {
         i + 1 <= wrapArray.length ? (i = i + 1) : (i = i);
-        scroll.scrollTo(wrapArray[i]!.current.offsetTop, {
-          top: wrapArray[i]!.current.offsetTop,
+        scroll.scrollTo((wrapArray[i]!.current! as HTMLElement)?.offsetTop, {
+          top: (wrapArray[i]!.current! as HTMLElement)?.offsetTop,
           duration: 1000,
         });
-        setScrollY(wrapArray[i]!.current.offsetTop);
+        setScrollY((wrapArray[i]!.current! as HTMLElement)?.offsetTop);
         return setWrapArrayIndex(i);
       }
     },
@@ -155,13 +173,13 @@ export default function Tving() {
     window.scrollTo({ top: 0 });
     try {
       setLoading(true);
-      const [responseMovieList, responseTvList]: [
-        AxiosResponse,
-        AxiosResponse
-      ] = await Promise.all([getTopMovie(), getTopTv()]);
+      const [responseMovieList, responseTvList] = await Promise.all([
+        getTopMovie(),
+        getTopTv(),
+      ]);
       responseTvList.results.length > 0
         ? setTopTvList(
-            responseTvList.results.map((e: { [key: string]: any }) => {
+            responseTvList.results.map((e: unknownObj) => {
               e.complete = false;
               return e;
             })
@@ -203,7 +221,14 @@ export default function Tving() {
 
   useEffect(() => {
     if (movieWrap && movieWrap.current) {
-      // setMovieOffset(movieWrap.current?.offsetTop);
+      console.log(
+        movieWrap.current,
+        'movieWrap',
+        (movieWrap.current as HTMLElement)?.offsetTop
+      );
+      alert((movieWrap.current as HTMLElement)?.offsetTop + 'movieWrap');
+
+      // setMovieOffset((movieWrap.current as HTMLElement)?.offsetTop);
       (movieWrap.current as HTMLElement).style.height =
         window.screen.availHeight + 'px';
     }
@@ -211,7 +236,14 @@ export default function Tving() {
 
   useEffect(() => {
     if (tvWrap && tvWrap.current) {
-      // setTvOffset(tvWrap.current?.offsetTop);
+      console.log(
+        tvWrap.current,
+        'tvWrap',
+        (tvWrap.current! as HTMLElement)?.offsetTop
+      );
+      alert((tvWrap.current as HTMLElement)?.offsetTop + 'movieWrap');
+
+      // setTvOffset((tvWrap.current! as HTMLElement).offsetTop));
       (tvWrap.current as HTMLElement).style.height =
         window.screen.availHeight + 'px';
     }
@@ -231,7 +263,7 @@ export default function Tving() {
           setLoading(true);
           const res = await getSearchMedia(
             areaN,
-            (e.target! as HTMLInputElement).value
+            (e.target as HTMLInputElement).value
           );
           if (!res.results.length) {
             setWarnMsg('검색결과가 없다');
@@ -266,8 +298,6 @@ export default function Tving() {
         } catch (e) {
           setLoading(false);
           console.log(e);
-        } finally {
-          console.log(wrapArray[1].current, wrapArray, '오프셋');
         }
       }
     },
@@ -286,11 +316,11 @@ export default function Tving() {
     setOffset({ movie: movieOffset, tv: tvOffset });
   }, [movieOffset, tvOffset]);
   // const computedMovieImgLoaded = useMemo(() => {
-  //   return topMovieList.map(e => e.complete === true);
-  // }, [topMovieList.map(e => e.complete)]);
+  //   return topMovieList.map((e:unknownObj)=> e.complete === true);
+  // }, [topMovieList.map((e:unknownObj)=> e.complete)]);
 
   // const computedTvImgLoaded = useMemo(() => {
-  //   return topTvList.map(e => e.complete === true);
+  //   return topTvList.map((e:unknownObj)=> e.complete === true);
   // }, [topTvList]);
   const completeImgLoaded = () => {
     //   console.log(
@@ -305,24 +335,25 @@ export default function Tving() {
       topMovieList[0] !== null &&
       topTvList.length > 0 &&
       topTvList[0] !== null &&
-      (topMovieList as unknownObj[]).every((e: unknownObj) => e.complete) &&
-      (topTvList as unknownObj[]).every((e: unknownObj) => e.complete)
+      (topMovieList as unknownObj[]).every(e => e.complete) &&
+      (topTvList as unknownObj[]).every(e => e.complete)
     ) {
       setLoading(false);
     } else {
       setLoading(true);
     }
   };
-  const handleComplete = (list: any, i: number, t: string) => {
+  const handleComplete = (list: unknownObj[], i: number, t: string) => {
     if (list[0] !== null) {
-      // console.log(
-      //   '실행',
-      //   topMovieList.map((e: unknownObj) => e.complete),
-      //   topTvList.map((e: unknownObj) => e.complete),
-      //   topMovieList.every(e => e.complete),
-      //   topTvList.every(e => e.complete)
-      // );
+      console.log(
+        '실행',
+        (topMovieList as unknownObj[]).map((e: unknownObj) => e.complete),
+        (topTvList as unknownObj[]).map((e: unknownObj) => e.complete),
+        (topMovieList as unknownObj[]).every(e => e.complete),
+        (topTvList as unknownObj[]).every(e => e.complete)
+      );
       list[i].complete = true;
+      console.log(list[i]);
       completeImgLoaded();
     }
     // completeImgLoaded();
@@ -332,7 +363,7 @@ export default function Tving() {
     <div className={styled.content_wrap}>
       <div style={{ width: '100px', height: '50px', position: 'fixed' }}>
         {/* {topTvList.every(e => e.complete) + 'tv'} */}
-        {areaName}
+        {areaName + '에러이알 넴임'}
         {/* {topMovieList.every(e => e.complete) + 'movie'} */}
       </div>
       <Modal
@@ -361,16 +392,24 @@ export default function Tving() {
                 {topMovieList.length > 0 && topMovieList[0] !== null
                   ? topMovieList
                       .slice(0, Math.abs(topMovieList.length / 2))
-                      .map((e: unknownObj | null, i: number) => (
+                      .map((e, i) => (
                         <li className={styled.post} key={i}>
                           <Link to={`/main/movie/${e!.id}`}>
                             <Img
                               src={e!.backdrop_path}
                               onLoad={() =>
-                                handleComplete(topMovieList, i, 'load')
+                                handleComplete(
+                                  topMovieList as unknownObj[],
+                                  i,
+                                  'load'
+                                )
                               }
                               onError={() => {
-                                handleComplete(topMovieList, i, 'load');
+                                handleComplete(
+                                  topMovieList as unknownObj[],
+                                  i,
+                                  'load'
+                                );
                               }}
                               // onError={handleComplete(topMovieList, i)}
                             />
@@ -390,14 +429,14 @@ export default function Tving() {
                               src={e!.backdrop_path}
                               onLoad={() =>
                                 handleComplete(
-                                  topMovieList,
+                                  topMovieList as unknownObj[],
                                   i + Math.abs(topMovieList.length / 2),
                                   'load'
                                 )
                               }
                               onError={() =>
                                 handleComplete(
-                                  topMovieList,
+                                  topMovieList as unknownObj[],
                                   i + Math.abs(topMovieList.length / 2),
                                   'load'
                                 )
@@ -433,10 +472,18 @@ export default function Tving() {
                             <Img
                               src={e!.backdrop_path}
                               onLoad={() =>
-                                handleComplete(topTvList, i, 'load')
+                                handleComplete(
+                                  topTvList as unknownObj[],
+                                  i,
+                                  'load'
+                                )
                               }
                               onError={() =>
-                                handleComplete(topTvList, i, 'load')
+                                handleComplete(
+                                  topTvList as unknownObj[],
+                                  i,
+                                  'load'
+                                )
                               }
                               // onError={handleComplete(topTvList, i)}
                             />
@@ -456,14 +503,14 @@ export default function Tving() {
                               src={e!.backdrop_path}
                               onLoad={() =>
                                 handleComplete(
-                                  topTvList,
+                                  topTvList as unknownObj[],
                                   i + Math.abs(topTvList.length / 2),
                                   'load'
                                 )
                               }
                               onError={() =>
                                 handleComplete(
-                                  topTvList,
+                                  topTvList as unknownObj[],
                                   i + Math.abs(topTvList.length / 2),
                                   'load'
                                 )

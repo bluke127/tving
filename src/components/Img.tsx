@@ -36,7 +36,6 @@ export default function Img(props: any) {
         <img
           ref={imgRef}
           {...props}
-          onLoad={onLoad}
           src={`${process.env.REACT_APP_IMG_URL}${props.src}`}
           alt={props.alt}
         />

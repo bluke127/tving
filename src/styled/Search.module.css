@@ -4,6 +4,7 @@
   position: fixed;
   bottom: 10%;
   right: 5%;
+  z-index: 1;
 }
 .search_input {
   transition: width ease 1s;

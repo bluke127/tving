@@ -1,38 +1,97 @@
-.App {
-  text-align: center;
+@charset "UTF-8";
+
+/** 한글폰트 */
+@font-face {
+  font-family: 'AppleSDGothicNeoB00';
+  font-style: normal;
+  font-weight: normal;
+  font-display: swap;
+  src: url('assets/fonts/AppleSDGothicNeoB/AppleSDGothicNeoB.woff2')
+      format('woff2'),
+    url('assets/fonts/AppleSDGothicNeoB/AppleSDGothicNeoB.woff') format('woff');
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+@font-face {
+  font-family: 'AppleSDGothicNeoEB00';
+  font-style: normal;
+  font-weight: normal;
+  font-display: swap;
+  src: url('assets/fonts/AppleSDGothicNeoEB/AppleSDGothicNeoEB.woff2')
+      format('woff2'),
+    url('assets/fonts/AppleSDGothicNeoEB/AppleSDGothicNeoEB.woff')
+      format('woff');
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+@font-face {
+  font-family: 'AppleSDGothicNeoH00';
+  font-style: normal;
+  font-weight: normal;
+  font-display: swap;
+  src: url('assets/fonts/AppleSDGothicNeoH/AppleSDGothicNeoH.woff2')
+      format('woff2'),
+    url('assets/fonts/AppleSDGothicNeoH/AppleSDGothicNeoH.woff') format('woff');
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+@font-face {
+  font-family: 'AppleSDGothicNeoL00';
+  font-style: normal;
+  font-weight: normal;
+  font-display: swap;
+  src: url('assets/fonts/AppleSDGothicNeoL/AppleSDGothicNeoL.woff2')
+      format('woff2'),
+    url('assets/fonts/AppleSDGothicNeoL/AppleSDGothicNeoL.woff') format('woff');
 }
 
-.App-link {
-  color: #61dafb;
+@font-face {
+  font-family: 'AppleSDGothicNeoM00';
+  font-style: normal;
+  font-weight: normal;
+  font-display: swap;
+  src: url('assets/fonts/AppleSDGothicNeoM/AppleSDGothicNeoM.woff2')
+      format('woff2'),
+    url('assets/fonts/AppleSDGothicNeoM/AppleSDGothicNeoM.woff') format('woff');
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+@font-face {
+  font-family: 'AppleSDGothicNeoR00';
+  font-style: normal;
+  font-weight: normal;
+  font-display: swap;
+  src: url('assets/fonts/AppleSDGothicNeoR/AppleSDGothicNeoR.woff2')
+      format('woff2'),
+    url('assets/fonts/AppleSDGothicNeoR/AppleSDGothicNeoR.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'AppleSDGothicNeoT00';
+  font-style: normal;
+  font-weight: normal;
+  font-display: swap;
+  src: url('assets/fonts/AppleSDGothicNeoT/AppleSDGothicNeoT.woff2')
+      format('woff2'),
+    url('assets/fonts/AppleSDGothicNeoT/AppleSDGothicNeoT.woff') format('woff');
+}
+
+@font-face {
+  font-family: NanumSquareEB;
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('assets/fonts/NanumSquareB/NanumSquareExtraBold.ttf') format('woff');
+}
+
+@font-face {
+  font-family: NanumSquareB;
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('assets/fonts/NanumSquareB/NanumSquareBold.ttf') format('woff');
+}
+
+body {
+  width: 100%;
+  height: 100%;
+  background-color: #000;
+  color: #fff;
+  font-family: NanumSquareEB;
 }

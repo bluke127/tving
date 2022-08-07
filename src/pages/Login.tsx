@@ -4,6 +4,7 @@ import { getLogin } from 'services/account';
 import Modal from 'components/Modal';
 import styles from 'styled/Login.module.css';
 import ColorButton from 'components/ColorButton';
+import BaseInput from 'components/BaseInput';
 import { useRecoilState } from 'recoil';
 import { modalFlagState, userIdState, currentTargetState } from '../atoms';
 
@@ -28,13 +29,9 @@ export default function Login() {
   const passwordReg: RegExp = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
   const [id, setId] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  useEffect(() => {
-    console.log(password);
-  }, [password]);
   const currentTargetId = useRef<HTMLInputElement>(null);
   const currentTargetPassword = useRef<HTMLInputElement>(null);
-
-  let [warnMsgConfig, setWarnMsgConfig] = useState<{
+  const [warnMsgConfig, setWarnMsgConfig] = useState<{
     id: {
       string: string;
       value: string;
@@ -61,32 +58,30 @@ export default function Login() {
     setPassword(value);
   };
 
-  // const checkId = useMemo(() => {
-  //   setWarnMsgConfig({
-  //     ...warnMsgConfig,
-  //     id: { ...warnMsgConfig.id, value: id, reg: idReg.test(id) },
-  //   });
-  // }, [id]);
-  // const checkPassword = useMemo(() => {
-  //   setWarnMsgConfig({
-  //     ...warnMsgConfig,
-  //     password: {
-  //       ...warnMsgConfig.password,
-  //       value: password,
-  //       reg: passwordReg.test(password),
-  //     },
-  //   });
-  // }, [password]);
+  const checkId = useMemo(() => {
+    setWarnMsgConfig({
+      ...warnMsgConfig,
+      id: { ...warnMsgConfig.id, value: id, reg: idReg.test(id) },
+    });
+  }, [id]);
+  const checkPassword = useMemo(() => {
+    setWarnMsgConfig({
+      ...warnMsgConfig,
+      password: {
+        ...warnMsgConfig.password,
+        value: password,
+        reg: passwordReg.test(password),
+      },
+    });
+  }, [password]);
   useEffect(() => {
     const obj = Object.entries(warnMsgConfig);
     for (let i = 0; i < obj.length; i++) {
       let [key, objValue] = obj[i];
-      console.log(warnMsgConfig, obj);
       if (!objValue.value) {
         setWarnMsg(`${objValue.string}을 입력해주세요!`);
         return;
       } else if (!objValue.reg) {
-        console.log(objValue.value, idReg, id, '>>');
         setWarnMsg(`${objValue.string} 형식이 올바르지 않습니다.`);
         return;
       }
@@ -150,26 +145,27 @@ export default function Login() {
         로그인
         <div className={styles.input_wrap}>
           <div>
-            <input
+            <BaseInput
               type="text"
               value={id}
               onClick={inputClick}
               onChange={insertId}
               ref={currentTargetId}
             />
-            {currentTarget === currentTargetId.current ? (
+            {currentTarget === currentTargetId.current && currentTarget ? (
               <button onClick={() => setId('')}>x</button>
             ) : null}
           </div>
           <div>
-            <input
+            <BaseInput
               type="text"
               value={password}
               onClick={inputClick}
               onChange={insertPassword}
               ref={currentTargetPassword}
             />
-            {currentTarget === currentTargetPassword.current ? (
+            {currentTarget === currentTargetPassword.current &&
+            currentTarget ? (
               <button onClick={() => setPassword('')}>x</button>
             ) : null}
           </div>

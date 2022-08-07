@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Start from 'pages/Login';
-import Layout from 'layout/Layout.jsx';
+import Layout from 'layout/Layout';
 
 import Details from 'pages/Details';
 import Tving from 'pages/Tving';
@@ -15,8 +15,8 @@ import {
   useSetRecoilState,
   useResetRecoilState,
 } from 'recoil';
-import initStyle from 'styled/init.module.css';
-import 'styled/App.css';
+import 'styled/init.module.css';
+// import 'styled/App.css';
 export default function App() {
   return (
     <>

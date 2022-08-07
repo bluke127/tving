@@ -9,7 +9,7 @@ import {
 } from 'recoil';
 import { modalFlagState, countState, userIdState } from '../atoms';
 import BaseInput from 'components/BaseInput';
-const Header = forwardRef((props, ref) => {
+const Header = forwardRef((props, ref: any) => {
   const SearchImg = <div>서취</div>;
   return (
     <div className={styled.header_wrap} ref={ref}>
