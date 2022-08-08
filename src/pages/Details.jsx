@@ -51,11 +51,11 @@ export default function Details() {
     setLoading(false);
   }, [loading]);
   const currentFavorateState = useMemo(() => {
-    favorate.includes();
+    // favorate.includes();
   });
-  useEffect(() => {
-    if (favorate) setFavorate({ id, type });
-  }, [favorate]);
+  // useEffect(() => {
+  //   if (favorate) setFavorate({ id, type });
+  // }, [favorate]);
   const { type, id } = useParams();
   const a = () => {
     console.log(favorate);
@@ -68,7 +68,7 @@ export default function Details() {
         <ClipLoader color={color} css={override} size={150} />
       ) : (
         <div className={styles.detail_wrap}>
-          <Favorate onClick={a(id, type)}></Favorate>
+          <Favorate onClick={(id, type) => a}></Favorate>
           <ul>
             {response
               ? Object.entries(response).map(([key, value]) => (

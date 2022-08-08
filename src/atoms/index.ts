@@ -70,7 +70,7 @@ export const useInfo = atom({
   key: 'id',
   default: null,
 });
-export const offsetState = atom({
+export const offsetState = atom<any>({
   key: 'offset',
-  default: { movie: 0, tv: 0 },
+  default: { movie: 0, tv: 0, selectedOffset: null },
 });

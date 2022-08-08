@@ -9,7 +9,7 @@ import {
 } from 'recoil';
 import { modalFlagState, countState, userIdState } from '../atoms';
 import BaseInput from 'components/BaseInput';
-const Header = forwardRef((props, ref: any) => {
+const Header = forwardRef((props: any, ref: any) => {
   const SearchImg = <div>서취</div>;
   return (
     <div className={styled.header_wrap} ref={ref}>
@@ -17,8 +17,8 @@ const Header = forwardRef((props, ref: any) => {
         <li>
           <h1>Tving</h1>
         </li>
-        <li>Tv</li>
-        <li>영화</li>
+        <li onClick={() => props.locateView('movie')}>영화</li>
+        <li onClick={() => props.locateView('tv')}>Tv</li>
         <li>저장리스트</li>
         <li>{useRecoilValue(userIdState)} 님 환영합니다.</li>
       </ul>

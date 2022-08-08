@@ -63,20 +63,11 @@ export default function Tving() {
   const header = useMemo<{ current: null | HTMLElement }>(() => {
     return h ? { current: h } : { current: null };
   }, [h]);
-  // const location = useNavigate();
-  // const id = useRecoilValue(userIdState);
-  // useEffect(() => {
-  //   if (!id) location('/');
-  // }, [id]);
   const handleScroll = (event: KeyboardEvent) => {
     event.preventDefault();
     setIndex(event.key, wrapArrayIndex);
-    // setScrollY(window.scrollY);
     setPageOffset(window.scrollY);
   };
-  // ,
-  // [wrapArrayIndex]
-  // );
   useEffect(() => {
     setWrapArrayIndex(wrapArrayIndex);
     if (tvWrap.current && movieWrap.current) {
@@ -88,17 +79,16 @@ export default function Tving() {
 
   //상단 header와 movieList의 area, tvList의 area (ref)
   const wrapArray = useMemo(() => {
-    console.log(header, movieWrap, tvWrap);
-    console.log(
-      (tvWrap.current! as HTMLElement)?.offsetTop,
-      (movieWrap.current! as HTMLElement)?.offsetTop
-    );
     setTvOffset((tvWrap.current! as HTMLElement)?.offsetTop);
-    setMovieOffset((movieWrap.current! as HTMLElement)?.offsetTop);
     return [header, movieWrap, tvWrap];
   }, [header, movieWrap, tvWrap]);
   useEffect(() => {
     console.log(wrapArray);
+    setOffset({
+      ...offset,
+      movie: (wrapArray[1]!.current! as HTMLElement)?.offsetTop,
+      tv: (wrapArray[2]!.current! as HTMLElement)?.offsetTop,
+    });
   }, [wrapArray]);
   const [areaName, setAreaName] = useState('header');
   useEffect(() => {
@@ -120,7 +110,7 @@ export default function Tving() {
     console.log(
       '화이팅',
 
-      (header!.current as HTMLElement)?.offsetTop,
+      header,
       movieOffset,
       tvOffset,
       v,
@@ -130,10 +120,9 @@ export default function Tving() {
   }, [scrollY]);
   const setIndex = useCallback(
     (type: string, index: number) => {
+      alert();
       let i = index;
       placedArea.move = false;
-      console.log(wrapArray, 'wrapArray');
-      alert(wrapArrayIndex + 'index');
       if (type === 'ArrowUp') {
         if (i === 0) {
           setWrapArrayIndex(0);
@@ -144,7 +133,6 @@ export default function Tving() {
           });
         }
         i - 1 <= 0 ? (i = 0) : (i = i - 1);
-        console.log(wrapArray, header);
         scroll.scrollTo((wrapArray[i]!.current! as HTMLElement)?.offsetTop, {
           top: (wrapArray[i]!.current! as HTMLElement)?.offsetTop,
           duration: 1000,
@@ -193,18 +181,20 @@ export default function Tving() {
             })
           )
         : setTopMovieList([null]);
-      console.log(1);
     } catch (e) {
       console.log(e);
     } finally {
       setWrapArrayIndex(0);
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      console.log(topMovieList);
       setLoading(false);
     }
   }, []);
   useEffect(() => {
     fetchList();
+    console.log(offset, '섹스');
+    window.scrollTo({
+      top: offset[offset.selectedOffset as string] as number,
+    });
   }, []);
   useEffect(() => {
     completeImgLoaded();
@@ -212,6 +202,8 @@ export default function Tving() {
   const [slideMoveList, slideSetMovieList] = useState([]);
   const [slideTvList, slideSetTvList] = useState([]);
   useEffect(() => {
+    console.log(tvWrap, movieWrap, 200);
+
     // setWrapArrayIndex(wrapArrayIndex);
     // if (tvWrap.current && movieWrap.current) {
     //   window.addEventListener('keyup', handleScroll);
@@ -226,12 +218,18 @@ export default function Tving() {
         'movieWrap',
         (movieWrap.current as HTMLElement)?.offsetTop
       );
-      alert((movieWrap.current as HTMLElement)?.offsetTop + 'movieWrap');
 
-      // setMovieOffset((movieWrap.current as HTMLElement)?.offsetTop);
       (movieWrap.current as HTMLElement).style.height =
         window.screen.availHeight + 'px';
+
+      setMovieOffset((movieWrap.current! as HTMLElement)?.offsetTop);
     }
+    console.log(
+      offset,
+      movieWrap.current,
+      (movieWrap.current! as HTMLElement)?.offsetTop,
+      '섹스m'
+    );
   }, [movieWrap.current]);
 
   useEffect(() => {
@@ -241,17 +239,32 @@ export default function Tving() {
         'tvWrap',
         (tvWrap.current! as HTMLElement)?.offsetTop
       );
-      alert((tvWrap.current as HTMLElement)?.offsetTop + 'movieWrap');
 
-      // setTvOffset((tvWrap.current! as HTMLElement).offsetTop));
+      setTvOffset((tvWrap.current! as HTMLElement)?.offsetTop);
+      console.log(
+        offset,
+        tvWrap.current,
+        (tvWrap.current! as HTMLElement)?.offsetTop,
+        '섹스2'
+      );
       (tvWrap.current as HTMLElement).style.height =
         window.screen.availHeight + 'px';
     }
   }, [tvWrap.current]);
+  useEffect(() => {
+    let i = 0;
+    if (offset.selectedOffset === 'movie') {
+      setWrapArrayIndex(1);
+      i = 1;
+    } else if (offset.selectedOffset === 'tv') {
+      setWrapArrayIndex(2);
+      i = 2;
+    }
+    setIndex(offset.selectedOffset, i as number);
+  }, [offset.selectedOffset]);
   const [warnMsg, setWarnMsg] = useState<string | null>(null);
   const searchEvent = useCallback(
     async (e: KeyboardEvent) => {
-      console.log(wrapArray[wrapArrayIndex], wrapArray, wrapArrayIndex);
       let areaN = areaName;
       if (areaName === 'header') {
         areaN = 'movie';
@@ -289,10 +302,6 @@ export default function Tving() {
                 )
               : setTopMovieList([null]);
           }
-          console.log(
-            localStorage.getItem('offset') + 'px',
-            typeof localStorage.getItem('offset')
-          );
           setLoading(false);
           console.log(placedArea.position);
         } catch (e) {
@@ -312,8 +321,7 @@ export default function Tving() {
   }, [loading]);
 
   useEffect(() => {
-    alert(JSON.stringify({ movie: movieOffset, tv: tvOffset }));
-    setOffset({ movie: movieOffset, tv: tvOffset });
+    console.log(movieOffset, tvOffset, '스파이더');
   }, [movieOffset, tvOffset]);
   // const computedMovieImgLoaded = useMemo(() => {
   //   return topMovieList.map((e:unknownObj)=> e.complete === true);
@@ -364,6 +372,7 @@ export default function Tving() {
       <div style={{ width: '100px', height: '50px', position: 'fixed' }}>
         {/* {topTvList.every(e => e.complete) + 'tv'} */}
         {areaName + '에러이알 넴임'}
+        {JSON.stringify(offset) + '지'}
         {/* {topMovieList.every(e => e.complete) + 'movie'} */}
       </div>
       <Modal

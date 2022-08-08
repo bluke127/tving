@@ -15,6 +15,7 @@ import {
   modalFlagState,
   countState,
   userIdState,
+  offsetState,
   loadingState,
   headerState,
 } from '../atoms';
@@ -40,14 +41,21 @@ export default function Layout() {
     z-index: 1;
   `;
   let [color, setColor] = useState('#ffffff');
+  const [offset, setOffset] = useRecoilState(offsetState);
 
   useEffect(() => {
     console.log(param, '파람즈');
   }, []);
+  const locateView = (type: string) => {
+    setOffset({ ...offset, selectedOffset: type });
+    if (param.pathname !== '/main/tving') {
+      location('/main/tving');
+    }
+  };
   const [headerS, setHeaderS] = useRecoilState(headerState);
   const location = useNavigate();
   useEffect(() => {
-    if (!sessionStorage.getItem('userInfo')) {
+    if (param.pathname !== '/main/tving') {
       location('/');
     }
   }, []);
@@ -66,7 +74,7 @@ export default function Layout() {
   // ) : (
   return (
     <>
-      <Header ref={headerRef}></Header>
+      <Header locateView={locateView} ref={headerRef}></Header>
       {/* <div className={styled.wrap}> */}
       {loading ? (
         <div
