@@ -119,10 +119,20 @@ export default function Tving() {
     setAreaName(v as string);
   }, [scrollY]);
   const setIndex = useCallback(
-    (type: string, index: number) => {
-      alert();
+    (type: string, index: number, isHeaderE?: string) => {
       let i = index;
       placedArea.move = false;
+
+      if (isHeaderE) {
+        setWrapArrayIndex(index);
+        return scroll.scrollTo(
+          (wrapArray[i]!.current! as HTMLElement)?.offsetTop,
+          {
+            top: (wrapArray[i]!.current! as HTMLElement)?.offsetTop,
+            duration: 1000,
+          }
+        );
+      }
       if (type === 'ArrowUp') {
         if (i === 0) {
           setWrapArrayIndex(0);
@@ -190,11 +200,13 @@ export default function Tving() {
     }
   }, []);
   useEffect(() => {
-    fetchList();
-    console.log(offset, '섹스');
-    window.scrollTo({
-      top: offset[offset.selectedOffset as string] as number,
-    });
+    const setList = async () => {
+      await fetchList();
+      window.scrollTo({
+        top: offset[offset.selectedOffset as string] as number,
+      });
+    };
+    setList();
   }, []);
   useEffect(() => {
     completeImgLoaded();
@@ -254,13 +266,11 @@ export default function Tving() {
   useEffect(() => {
     let i = 0;
     if (offset.selectedOffset === 'movie') {
-      setWrapArrayIndex(1);
       i = 1;
     } else if (offset.selectedOffset === 'tv') {
-      setWrapArrayIndex(2);
       i = 2;
     }
-    setIndex(offset.selectedOffset, i as number);
+    setIndex(offset.selectedOffset, i as number, 'headerEvent');
   }, [offset.selectedOffset]);
   const [warnMsg, setWarnMsg] = useState<string | null>(null);
   const searchEvent = useCallback(
@@ -313,11 +323,11 @@ export default function Tving() {
     [tvWrap.current, movieWrap.current, areaName]
   );
   useEffect(() => {
-    if (localStorage.getItem('offset')) {
-      window.scrollTo({
-        top: pageOffset,
-      });
-    }
+    // if (localStorage.getItem('offset')) {
+    //   window.scrollTo({
+    //     top: pageOffset,
+    //   });
+    // }
   }, [loading]);
 
   useEffect(() => {
@@ -353,15 +363,7 @@ export default function Tving() {
   };
   const handleComplete = (list: unknownObj[], i: number, t: string) => {
     if (list[0] !== null) {
-      console.log(
-        '실행',
-        (topMovieList as unknownObj[]).map((e: unknownObj) => e.complete),
-        (topTvList as unknownObj[]).map((e: unknownObj) => e.complete),
-        (topMovieList as unknownObj[]).every(e => e.complete),
-        (topTvList as unknownObj[]).every(e => e.complete)
-      );
       list[i].complete = true;
-      console.log(list[i]);
       completeImgLoaded();
     }
     // completeImgLoaded();
@@ -402,7 +404,12 @@ export default function Tving() {
                   ? topMovieList
                       .slice(0, Math.abs(topMovieList.length / 2))
                       .map((e, i) => (
-                        <li className={styled.post} key={i}>
+                        <li
+                          className={
+                            e!.backdrop_path ? styled.post : styled.empty_img
+                          }
+                          key={i}
+                        >
                           <Link to={`/main/movie/${e!.id}`}>
                             <Img
                               src={e!.backdrop_path}
@@ -432,7 +439,12 @@ export default function Tving() {
                   ? topMovieList
                       .slice(Math.abs(topMovieList.length / 2))
                       .map((e, i) => (
-                        <li className={styled.post} key={i}>
+                        <li
+                          className={
+                            e!.backdrop_path ? styled.post : styled.empty_img
+                          }
+                          key={i}
+                        >
                           <Link to={`/main/movie/${e!.id}`}>
                             <Img
                               src={e!.backdrop_path}
@@ -476,7 +488,12 @@ export default function Tving() {
                   ? topTvList
                       .slice(0, Math.abs(topTvList.length / 2))
                       .map((e, i) => (
-                        <li className={styled.post} key={i}>
+                        <li
+                          className={
+                            e!.backdrop_path ? styled.post : styled.empty_img
+                          }
+                          key={i}
+                        >
                           <Link to={`/main/tv/${e!.id}`}>
                             <Img
                               src={e!.backdrop_path}
@@ -506,7 +523,12 @@ export default function Tving() {
                   ? topTvList
                       .slice(Math.abs(topTvList.length / 2))
                       .map((e, i) => (
-                        <li className={styled.post} key={i}>
+                        <li
+                          className={
+                            e!.backdrop_path ? styled.post : styled.empty_img
+                          }
+                          key={i}
+                        >
                           <Link to={`/main/tv/${e!.id}`}>
                             <Img
                               src={e!.backdrop_path}

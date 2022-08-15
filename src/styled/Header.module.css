@@ -1,9 +1,14 @@
 .header_wrap {
   width: 100%;
   line-height: 20vh;
+  height: 20vh;
+  background-color: black;
 }
 .header_wrap ul {
   display: flex;
   flex-direction: row;
+  line-height: 20vh;
+  height: 20vh;
+  position: fixed;
   gap: 1em;
 }
