@@ -194,7 +194,7 @@ export default function Tving() {
     } catch (e) {
       console.log(e);
     } finally {
-      setWrapArrayIndex(0);
+      if (wrapArrayIndex == null) setWrapArrayIndex(0);
       window.scrollTo({ top: 0, behavior: 'smooth' });
       setLoading(false);
     }
@@ -271,11 +271,14 @@ export default function Tving() {
       i = 2;
     }
     setIndex(offset.selectedOffset, i as number, 'headerEvent');
+    setAreaName(offset.selectedOffset);
   }, [offset.selectedOffset]);
   const [warnMsg, setWarnMsg] = useState<string | null>(null);
   const searchEvent = useCallback(
     async (e: KeyboardEvent) => {
       let areaN = areaName;
+
+      setOffset({ ...offset, selectedOffset: areaN });
       if (areaName === 'header') {
         areaN = 'movie';
       }
@@ -375,6 +378,7 @@ export default function Tving() {
         {/* {topTvList.every(e => e.complete) + 'tv'} */}
         {areaName + '에러이알 넴임'}
         {JSON.stringify(offset) + '지'}
+        {wrapArrayIndex + '인텍스'}
         {/* {topMovieList.every(e => e.complete) + 'movie'} */}
       </div>
       <Modal
