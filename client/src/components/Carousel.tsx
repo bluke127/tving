@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useMemo, forwardRef, useRef } from 'react';
 import styled from 'styled/Carousel.module.css';
+import { Link } from 'react-router-dom';
+
 import {
   RecoilRoot,
   atom,
@@ -93,11 +95,13 @@ export default function Carousel({
                 className={styled.scene}
                 style={{ width: (screen.current! as HTMLElement).clientWidth }}
               >
-                <Img
-                  className={styled.img}
-                  src={e.backdrop_path}
-                  alt={`list_${index}`}
-                />
+                <Link to={`/main/movie/${e!.id}`}>
+                  <Img
+                    className={styled.img}
+                    src={e.backdrop_path}
+                    alt={`list_${index}`}
+                  />
+                </Link>
               </li>
             ))
           : null}
