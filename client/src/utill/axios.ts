@@ -29,6 +29,7 @@ const api = {
     query,
     many = false,
   }: {
+    baseUrl: string;
     url: string;
     query: any;
     many: Boolean;
@@ -42,17 +43,36 @@ const api = {
     });
     return (result as AxiosResponse) || (many ? [] : {});
   },
-  post: ({ url, query }: { url: any; query: any }) => {
+  post: ({
+    baseURL,
+    url,
+    query,
+  }: {
+    baseURL?: string;
+    url?: any;
+    query?: any;
+  }) => {
     const params = query;
+    // const result = instance({ baseURL });
+    console.log(baseURL, '베이스');
+    instance.defaults.baseURL = baseURL;
     return instance.post(url, params);
   },
-  delete: ({ url, query }: { url: any; query: any }) => {
+  delete: ({ url, query }: { baseURL: string; url: any; query: any }) => {
     const params = query;
     return instance.delete(url, {
       data: params,
     });
   },
-  put: ({ url, query }: { url: any; query: any }) => {
+  put: ({
+    baseURL,
+    url,
+    query,
+  }: {
+    baseURL?: string;
+    url?: any;
+    query?: any;
+  }) => {
     const params = query;
     return instance.put(url, params);
   },
