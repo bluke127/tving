@@ -34,7 +34,6 @@ export default function Tving() {
   const locatedView = useOutletContext();
   useEffect(() => {
     //TODO:
-    alert(locatedView + 'TVIE');
   }, [locatedView]);
   const override = css`
     display: block;
@@ -136,7 +135,6 @@ export default function Tving() {
       if (type === 'ArrowUp') {
         if (i === 0) {
           setWrapArrayIndex(0);
-          alert();
           return scroll.scrollTo(0, {
             top: 0,
             duration: 300,
