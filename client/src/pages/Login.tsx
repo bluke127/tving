@@ -7,21 +7,26 @@ import ColorButton from 'components/ColorButton';
 import BaseInput from 'components/BaseInput';
 import { useRecoilState } from 'recoil';
 import { modalFlagState, userIdState, currentTargetState } from '../atoms';
+import { loginUser } from '_actions/user_action';
+import { useDispatch } from 'react-redux';
+import { createCipheriv } from 'crypto';
 
 export default function Login() {
   const location = useNavigate();
   const [modalFlag, setModalFlagState] =
     useRecoilState<boolean>(modalFlagState);
-
+  const dispatch = useDispatch();
   const [currentTarget, setCurrentTarget] =
     useRecoilState<any>(currentTargetState);
   const [userId, setUserId] = useRecoilState(userIdState);
   const inputClick = (e: React.MouseEvent) => {
     setCurrentTarget(e.currentTarget as HTMLInputElement);
   };
-  const showModal = () => {
+  const showModal = (msg?: string) => {
     if (!id && !password) {
       setWarnMsg(`아이디를 입력해주세요!`);
+    } else if (msg) {
+      setWarnMsg(msg);
     }
     setModalFlagState(true);
   };
@@ -96,11 +101,20 @@ export default function Login() {
     if (!id && !password) {
       setWarnMsg('아이디을 입력해주세요!');
     }
-    const response = await getLogin();
-    console.log(response);
-
-    location('/main/tving');
-    sessionStorage.setItem('userInfo', id);
+    try {
+      const response: {
+        [key: string]: any;
+      } = await dispatch(loginUser({ user_id: id, password }));
+      console.log(response, 'response');
+      if (!response.payload.loginSuccess) {
+        showModal(response.payload.message);
+      } else {
+        location('/main/tving');
+        sessionStorage.setItem('userInfo', id);
+      }
+    } catch (e) {
+      console.log(e);
+    }
   };
   // const counterHandler = useSetRecoilState(countState); // 값만 변경 시키기
   // const resetCounter = useResetRecoilState(countState); // 디폴트값으로 값 변경
