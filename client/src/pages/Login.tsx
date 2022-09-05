@@ -6,13 +6,20 @@ import styles from 'styled/Login.module.css';
 import ColorButton from 'components/ColorButton';
 import BaseInput from 'components/BaseInput';
 import { useRecoilState } from 'recoil';
-import { modalFlagState, userIdState, currentTargetState } from '../atoms';
+import {
+  modalFlagState,
+  userIdState,
+  currentTargetState,
+  loginFlagState,
+} from '../atoms';
 import { loginUser } from '_actions/user_action';
 import { useDispatch } from 'react-redux';
 import { createCipheriv } from 'crypto';
+import { useOutletContext } from 'react-router-dom';
 
 export default function Login() {
   const location = useNavigate();
+  const context: { locateView: Function } = useOutletContext();
   const [modalFlag, setModalFlagState] =
     useRecoilState<boolean>(modalFlagState);
   const dispatch = useDispatch();
@@ -34,6 +41,7 @@ export default function Login() {
   const passwordReg: RegExp = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
   const [id, setId] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [loginFlag, setLoginFlag] = useRecoilState(loginFlagState);
   const currentTargetId = useRef<HTMLInputElement>(null);
   const currentTargetPassword = useRef<HTMLInputElement>(null);
   const [warnMsgConfig, setWarnMsgConfig] = useState<{
@@ -62,7 +70,13 @@ export default function Login() {
       typeof e === 'object' ? (e.target as HTMLInputElement).value : e;
     setPassword(value);
   };
+  useEffect(() => {
+    console.log(context.locateView);
 
+    if (loginFlag) {
+      context.locateView();
+    }
+  }, []);
   const checkId = useMemo(() => {
     setWarnMsgConfig({
       ...warnMsgConfig,
@@ -109,8 +123,9 @@ export default function Login() {
       if (!response.payload.loginSuccess) {
         showModal(response.payload.message);
       } else {
-        location('/main/tving');
         sessionStorage.setItem('userInfo', id);
+        setLoginFlag(true);
+        context.locateView();
       }
     } catch (e) {
       console.log(e);

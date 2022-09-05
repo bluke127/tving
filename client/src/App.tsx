@@ -23,12 +23,11 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <>
-            <Route path="/" element={<Start />}></Route>
-            <Route path="/main" element={<Layout />}>
-              <Route path="" element={<Tving />}></Route>
+            <Route path="/" element={<Layout />}>
+              <Route path="" element={<Start />}></Route>
               <Route path=":type/:id" element={<Details />}></Route>
-            </Route>
-            <Route path="/main" element={<Layout />}>
+              {/* </Route>
+            <Route path="/main" element={<Layout />}> */}
               <Route path="tving" element={<Tving />}></Route>
             </Route>
             <Route path="*" element={<NotFound />}></Route>

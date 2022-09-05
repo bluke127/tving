@@ -9,9 +9,14 @@ export const countState = atom({
   default: 0,
 });
 
-export const userIdState = atom({
+export const userIdState = atom<string | null>({
   key: 'userId',
   default: null,
+});
+
+export const loginFlagState = atom({
+  key: 'loginFlag',
+  default: false,
 });
 
 export const currentTargetState = atom({

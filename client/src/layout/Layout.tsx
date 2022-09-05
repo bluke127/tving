@@ -1,6 +1,5 @@
 import React, { useRef, forwardRef, useState, useEffect } from 'react';
 
-import Stone from 'components/Stone';
 import styled from 'styled/Layout.module.css';
 import Header from 'layout/Header';
 import ClipLoader from 'react-spinners/ClipLoader';
@@ -12,19 +11,12 @@ import {
   useResetRecoilState,
 } from 'recoil';
 import {
-  modalFlagState,
-  countState,
-  userIdState,
+  loginFlagState,
   offsetState,
   loadingState,
   headerState,
 } from '../atoms';
-import {
-  Outlet,
-  useNavigate,
-  useLocation,
-  useOutletContext,
-} from 'react-router-dom';
+import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 
 // import AppStateProvider from 'providers/AppStateProvider';
 export default function Layout() {
@@ -32,7 +24,7 @@ export default function Layout() {
   // const currentCount = useRecoilValue(countState); // 읽기 전용!
   const headerRef = useRef(null);
 
-  const loading = useRecoilValue(loadingState);
+  const [loading, setLoading] = useRecoilState(loadingState);
 
   const override = css`
     border-color: red;
@@ -42,39 +34,46 @@ export default function Layout() {
   `;
   let [color, setColor] = useState('#ffffff');
   const [offset, setOffset] = useRecoilState(offsetState);
-
+  let [loginFlag, setLoginFlag] = useRecoilState(loginFlagState);
   useEffect(() => {
-    console.log(param, '파람즈');
-  }, []);
+    setLoginFlag(
+      (sessionStorage.getItem('userInfo') !== null ||
+        sessionStorage.getItem('userInfo') !== undefined) as boolean
+    );
+    console.log(loginFlag, '바뀌나');
+  }, [loginFlag]);
   const locateView = (type: string) => {
-    setOffset({ ...offset, selectedOffset: type });
-    if (param.pathname !== '/main/tving') {
-      location('/main/tving');
+    setOffset({ ...offset, selectedOffset: type ?? 'header' });
+    if (param.pathname !== '/tving') {
+      location('/tving');
     }
   };
   const [headerS, setHeaderS] = useRecoilState(headerState);
   const location = useNavigate();
   useEffect(() => {
-    if (param.pathname !== '/main/tving') {
-      location('/');
+    console.log(sessionStorage.getItem('userInfo'));
+    setLoginFlag(sessionStorage.getItem('userInfo') !== null);
+    alert(sessionStorage.getItem('userInfo') !== null);
+    if (param.pathname === '/tving') {
+      console.log(sessionStorage.getItem('userInfo'), 'userInfo');
+      if (!loginFlag) {
+        location('/');
+      }
     }
+    setLoading(false);
   }, []);
+
   useEffect(() => {
     if (headerRef) setHeaderS(headerRef.current);
   }, [headerRef]);
-  // {!sessionStorage.getItem('userInfo') ? (
-  //   <>
-  //     <Route path="/" exact to="/" element={<Start />}></Route>
-  //     <Route
-  //       path="*"
-  //       to="/"
-  //       element={<Navigate replace to="/" />}
-  //     ></Route>
-  //   </>
-  // ) : (
   return (
     <>
-      <Header locateView={locateView} ref={headerRef}></Header>
+      <Header
+        locateView={locateView}
+        ref={headerRef}
+        loginFlag={loginFlag}
+        param={param}
+      ></Header>
       {/* <div className={styled.wrap}> */}
       {loading ? (
         <div
@@ -86,7 +85,7 @@ export default function Layout() {
           </div>
         </div>
       ) : null}
-      <Outlet />
+      <Outlet context={{ locateView: locateView }} />
       {/* </div> */}
     </>
   );
