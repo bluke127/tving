@@ -44,6 +44,9 @@ export default function Layout() {
   }, [loginFlag]);
   const locateView = (type: string) => {
     setOffset({ ...offset, selectedOffset: type ?? 'header' });
+    if (param.pathname === '/' || param.pathname === '/register') {
+      return location(type);
+    }
     if (param.pathname !== '/tving') {
       location('/tving');
     }
