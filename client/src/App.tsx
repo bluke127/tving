@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Start from 'pages/Login';
+import Register from 'pages/Register';
 import Layout from 'layout/Layout';
 
 import Details from 'pages/Details';
@@ -25,6 +26,7 @@ export default function App() {
           <>
             <Route path="/" element={<Layout />}>
               <Route path="" element={<Start />}></Route>
+              <Route path="register" element={<Register />}></Route>
               <Route path=":type/:id" element={<Details />}></Route>
               {/* </Route>
             <Route path="/main" element={<Layout />}> */}
