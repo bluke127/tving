@@ -14,7 +14,7 @@ import {
 import { loginUser } from '_actions/user_action';
 import { useDispatch } from 'react-redux';
 import { useOutletContext } from 'react-router-dom';
-import BaseInputWithLabel from 'components/BaseInputWithLabel';
+import BaseInputWithCancel from 'components/BaseInputWithCancel';
 export default function Register() {
   const location = useNavigate();
   const context: { locateView: Function } = useOutletContext();
@@ -37,27 +37,55 @@ export default function Register() {
   };
   const idReg: RegExp = /^[a-z]+[a-z0-9]{5,19}$/g;
   const passwordReg: RegExp = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+  type warnMsgType = {
+    string: string;
+    value: string;
+    reg: boolean;
+  };
+  type warnMsgPasswordConfirmType = Pick<warnMsgType, 'value' | 'string'> & {
+    accordPassword: boolean;
+  };
   const [id, setId] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [passwordConfirm, setPasswordConfirm] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [name, setName] = useState<string>('');
+
   const [loginFlag, setLoginFlag] = useRecoilState(loginFlagState);
   const currentTargetId = useRef<HTMLInputElement>(null);
   const currentTargetPassword = useRef<HTMLInputElement>(null);
+  const currentTargetPasswordConfirm = useRef<HTMLInputElement>(null);
+  const currentTargetEmail = useRef<HTMLInputElement>(null);
+  const currentTargetName = useRef<HTMLInputElement>(null);
   const [warnMsgConfig, setWarnMsgConfig] = useState<{
-    id: {
-      string: string;
-      value: string;
-      reg: boolean;
-    };
-    password: {
-      string: string;
-      value: string;
-      reg: boolean;
-    };
+    id: warnMsgType;
+    password: warnMsgType;
+
+    passwordConfirm: warnMsgPasswordConfirmType;
+    email: warnMsgType;
+    name: warnMsgType;
   }>({
     id: { string: '아이디', value: id, reg: true },
     password: { string: '비밀번호', value: password, reg: true },
+    passwordConfirm: {
+      string: '비밀번호 확인해주소',
+      value: passwordConfirm,
+      accordPassword: useMemo(
+        () => password === passwordConfirm,
+        [password]
+      ) as boolean,
+    },
+    email: { string: '이메일', value: id, reg: true },
+    name: { string: '이름', value: name, reg: true },
   });
   const [warnMsg, setWarnMsg] = useState<string | null>(null);
+  const baseInputStyle = {
+    BaseInput: {
+      input: { backgroundColor: 'lightcoral' },
+      label: { color: 'blue' },
+    },
+    button: { fontSize: '25px' },
+  };
   const insertId = (e: React.ChangeEvent) => {
     let value =
       typeof e === 'object' ? (e.target as HTMLInputElement).value : e;
@@ -67,6 +95,22 @@ export default function Register() {
     let value =
       typeof e === 'object' ? (e.target as HTMLInputElement).value : e;
     setPassword(value);
+  };
+  const insertPasswordConfirm = (e: React.ChangeEvent) => {
+    let value =
+      typeof e === 'object' ? (e.target as HTMLInputElement).value : e;
+    setPasswordConfirm(value);
+  };
+  const insertEmail = (e: React.ChangeEvent) => {
+    let value =
+      typeof e === 'object' ? (e.target as HTMLInputElement).value : e;
+    setEmail(value);
+  };
+
+  const insertName = (e: React.ChangeEvent) => {
+    let value =
+      typeof e === 'object' ? (e.target as HTMLInputElement).value : e;
+    setName(value);
   };
   useEffect(() => {
     console.log(context.locateView);
@@ -91,6 +135,17 @@ export default function Register() {
       },
     });
   }, [password]);
+
+  const checkPasswordConfirm = useMemo(() => {
+    setWarnMsgConfig({
+      ...warnMsgConfig,
+      passwordConfirm: {
+        ...warnMsgConfig.passwordConfirm,
+        value: passwordConfirm,
+        accordPassword: password === passwordConfirm,
+      },
+    });
+  }, [password]);
   useEffect(() => {
     const obj = Object.entries(warnMsgConfig);
     for (let i = 0; i < obj.length; i++) {
@@ -98,8 +153,14 @@ export default function Register() {
       if (!objValue.value) {
         setWarnMsg(`${objValue.string}을 입력해주세요!`);
         return;
-      } else if (!objValue.reg) {
-        setWarnMsg(`${objValue.string} 형식이 올바르지 않습니다.`);
+      } else if (
+        Object.keys(objValue).includes('reg')
+          ? !(objValue as warnMsgType).reg
+          : !(objValue as warnMsgPasswordConfirmType).accordPassword
+      ) {
+        Object.keys(objValue).includes('reg')
+          ? setWarnMsg(`${objValue.string} 형식이 올바르지 않습니다.`)
+          : setWarnMsg(`${objValue.string}`);
         return;
       }
       setWarnMsg('');
@@ -144,35 +205,59 @@ export default function Register() {
       ></Modal>
       <div className={styles.wrap}>
         <div className={styles.input_wrap}>
-          <BaseInputWithLabel
+          <BaseInputWithCancel
             value={id}
             inputClick={inputClick}
             onInsert={insertId}
             currentTarget={currentTarget}
             currentTargetRef={currentTargetId?.current}
             setEmpty={() => setId('')}
-            style={{
-              BaseInput: {
-                input: { backgroundColor: 'lightcoral' },
-                label: { color: 'blue' },
-              },
-              button: { fontSize: '25px' },
-            }}
+            style={baseInputStyle}
             beforelabel={'id'}
-          ></BaseInputWithLabel>
-          <div>
-            <BaseInput
-              type="text"
-              value={password}
-              onClick={inputClick}
-              onChange={insertPassword}
-              ref={currentTargetPassword}
-            />
-            {currentTarget === currentTargetPassword.current &&
-            currentTarget ? (
-              <button onClick={() => setPassword('')}>x</button>
-            ) : null}
-          </div>
+          ></BaseInputWithCancel>
+          <BaseInputWithCancel
+            value={password}
+            inputClick={inputClick}
+            onInsert={insertPassword}
+            currentTarget={currentTarget}
+            currentTargetRef={currentTargetPassword?.current}
+            setEmpty={() => setPassword('')}
+            style={baseInputStyle}
+            beforelabel={'password'}
+          ></BaseInputWithCancel>
+
+          <BaseInputWithCancel
+            value={passwordConfirm}
+            inputClick={inputClick}
+            onInsert={insertPasswordConfirm}
+            currentTarget={currentTarget}
+            currentTargetRef={currentTargetPasswordConfirm?.current}
+            setEmpty={() => setPasswordConfirm('')}
+            style={baseInputStyle}
+            beforelabel={'passwordConfirm'}
+          ></BaseInputWithCancel>
+
+          <BaseInputWithCancel
+            value={email}
+            inputClick={inputClick}
+            onInsert={insertEmail}
+            currentTarget={currentTarget}
+            currentTargetRef={currentTargetEmail?.current}
+            setEmpty={() => setEmail('')}
+            style={baseInputStyle}
+            beforelabel={'email'}
+          ></BaseInputWithCancel>
+
+          <BaseInputWithCancel
+            value={name}
+            inputClick={inputClick}
+            onInsert={insertName}
+            currentTarget={currentTarget}
+            currentTargetRef={currentTargetName?.current}
+            setEmpty={() => setName('')}
+            style={baseInputStyle}
+            beforelabel={'name'}
+          ></BaseInputWithCancel>
           <div>{warnMsg}</div>
           <ColorButton
             onClick={() =>
