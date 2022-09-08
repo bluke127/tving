@@ -19,7 +19,7 @@ import { loginUser } from '_actions/user_action';
 import { useDispatch } from 'react-redux';
 import { useOutletContext } from 'react-router-dom';
 
-export default function BaseInputWithLable({
+export default function BaseInputWithCancel({
   value,
   inputClick,
   onInsert,
@@ -119,13 +119,18 @@ export default function BaseInputWithLable({
         type={type}
         value={value}
         onClick={inputClick}
-        onChange={insertId}
+        onInput={onInsert}
         ref={currentTargetId}
         style={style!.BaseInput}
         beforelabel={beforelabel}
       />
       {currentTarget === currentTargetId.current && currentTarget ? (
-        <button style={style!.button} onClick={() => setId('')}>
+        <button
+          style={style!.button}
+          onClick={() => {
+            setEmpty!();
+          }}
+        >
           x
         </button>
       ) : null}
