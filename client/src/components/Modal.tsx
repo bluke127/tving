@@ -8,6 +8,7 @@ import {
   useRecoilState,
   useRecoilValue,
 } from 'recoil';
+import { buttonType } from 'types';
 import { modalFlagState } from '../atoms';
 import Portal from 'utill/Portal';
 import { useNavigate } from 'react-router';
@@ -16,12 +17,6 @@ type ModalProps = {
   warnMsg: string | number | null;
   children?: string | number | null;
   button: buttonType[];
-};
-type buttonType = {
-  color: string | null;
-  backgroundColor: string | null;
-  func?: Function;
-  text: string | null;
 };
 export default function Modal({
   message,
@@ -52,7 +47,7 @@ export default function Modal({
                     color={buttonItem.color}
                     backgroundColor={buttonItem.backgroundColor}
                     onClick={() => {
-                      return buttonItem.func ? buttonItem.func : null;
+                      return buttonItem.func ? buttonItem.func() : null;
                     }}
                   >
                     {buttonItem.text}
