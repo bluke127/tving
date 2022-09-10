@@ -11,15 +11,26 @@ import {
   currentTargetState,
   loginFlagState,
 } from '../atoms';
-import { loginUser } from '_actions/user_action';
+import { registerUser } from '_actions/user_action';
 import { useDispatch } from 'react-redux';
 import { useOutletContext } from 'react-router-dom';
 import BaseInputWithCancel from 'components/BaseInputWithCancel';
+import { buttonType } from 'types';
+
+import { register } from 'react-scroll/modules/mixins/scroller';
 export default function Register() {
   const location = useNavigate();
   const context: { locateView: Function } = useOutletContext();
   const [modalFlag, setModalFlagState] =
     useRecoilState<boolean>(modalFlagState);
+  const [popupData, setPopupData] = useState<buttonType[]>([
+    {
+      text: '확인',
+      backgroundColor: 'blue',
+      color: '#fff',
+    },
+    { text: '취소', backgroundColor: 'lightGray', color: '#000' },
+  ]);
   const dispatch = useDispatch();
   const [currentTarget, setCurrentTarget] =
     useRecoilState<any>(currentTargetState);
@@ -37,6 +48,8 @@ export default function Register() {
   };
   const idReg: RegExp = /^[a-z]+[a-z0-9]{5,19}$/g;
   const passwordReg: RegExp = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+  const emailReg: RegExp =
+    /[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]$/i;
   type warnMsgType = {
     string: string;
     value: string;
@@ -68,7 +81,7 @@ export default function Register() {
     id: { string: '아이디', value: id, reg: true },
     password: { string: '비밀번호', value: password, reg: true },
     passwordConfirm: {
-      string: '비밀번호 확인해주소',
+      string: '한번더 비밀번호란',
       value: passwordConfirm,
       accordPassword: useMemo(
         () => password === passwordConfirm,
@@ -112,18 +125,12 @@ export default function Register() {
       typeof e === 'object' ? (e.target as HTMLInputElement).value : e;
     setName(value);
   };
-  useEffect(() => {
-    console.log(context.locateView);
-
-    if (loginFlag) {
-      context.locateView();
-    }
-  }, []);
   const checkId = useMemo(() => {
     setWarnMsgConfig({
       ...warnMsgConfig,
       id: { ...warnMsgConfig.id, value: id, reg: idReg.test(id) },
     });
+    console.log(warnMsgConfig, 'warnMsgConfig');
   }, [id]);
   const checkPassword = useMemo(() => {
     setWarnMsgConfig({
@@ -134,6 +141,7 @@ export default function Register() {
         reg: passwordReg.test(password),
       },
     });
+    console.log(warnMsgConfig, 'warnMsgConfig');
   }, [password]);
 
   const checkPasswordConfirm = useMemo(() => {
@@ -145,12 +153,40 @@ export default function Register() {
         accordPassword: password === passwordConfirm,
       },
     });
-  }, [password]);
+
+    console.log(warnMsgConfig, 'warnMsgConfig');
+  }, [passwordConfirm]);
+
+  const checkEmail = useMemo(() => {
+    setWarnMsgConfig({
+      ...warnMsgConfig,
+      email: {
+        ...warnMsgConfig.email,
+        value: email,
+        reg: emailReg.test(email),
+      },
+    });
+
+    console.log(warnMsgConfig, 'warnMsgConfig');
+  }, [email]);
+  const checkName = useMemo(() => {
+    setWarnMsgConfig({
+      ...warnMsgConfig,
+      name: {
+        ...warnMsgConfig.name,
+        value: name,
+        reg: true,
+      },
+    });
+
+    console.log(warnMsgConfig, 'warnMsgConfig');
+  }, [name]);
   useEffect(() => {
     const obj = Object.entries(warnMsgConfig);
     for (let i = 0; i < obj.length; i++) {
       let [key, objValue] = obj[i];
       if (!objValue.value) {
+        console.log(key, '키');
         setWarnMsg(`${objValue.string}을 입력해주세요!`);
         return;
       } else if (
@@ -158,33 +194,45 @@ export default function Register() {
           ? !(objValue as warnMsgType).reg
           : !(objValue as warnMsgPasswordConfirmType).accordPassword
       ) {
+        console.log(
+          Object.keys(objValue),
+          Object.keys(objValue).includes('reg'),
+          '확인플리즈'
+        );
         Object.keys(objValue).includes('reg')
           ? setWarnMsg(`${objValue.string} 형식이 올바르지 않습니다.`)
-          : setWarnMsg(`${objValue.string}`);
+          : setWarnMsg(`비밀번호와 ${objValue.string}이 일치하지 않습니다`);
         return;
       }
       setWarnMsg('');
     }
-  }, [id, password]);
+  }, [id, password, passwordConfirm, email, name]);
 
   useEffect(() => {
     setWarnMsg(null);
   }, []);
-  const login = async () => {
-    if (!id && !password) {
-      setWarnMsg('아이디을 입력해주세요!');
-    }
+  const register = async () => {
     try {
       const response: {
         [key: string]: any;
-      } = await dispatch(loginUser({ user_id: id, password }));
+      } = await dispatch(registerUser({ user_id: id, password, email, name }));
+      console.log({ user_id: id, password, email, name });
       console.log(response, 'response');
-      if (!response.payload.loginSuccess) {
+      if (!response.payload.success) {
         showModal(response.payload.message);
       } else {
-        sessionStorage.setItem('userInfo', id);
-        setLoginFlag(true);
-        context.locateView();
+        setPopupData([
+          {
+            text: '확인',
+            backgroundColor: 'blue',
+            color: '#fff',
+            func: () => {
+              alert();
+              context.locateView('/');
+            },
+          },
+        ]);
+        showModal('회원가입축하');
       }
     } catch (e) {
       console.log(e);
@@ -192,17 +240,7 @@ export default function Register() {
   };
   return (
     <>
-      <Modal
-        warnMsg={warnMsg}
-        button={[
-          {
-            text: '확인',
-            backgroundColor: 'blue',
-            color: '#fff',
-          },
-          { text: '취소', backgroundColor: 'lightGray', color: '#000' },
-        ]}
-      ></Modal>
+      <Modal warnMsg={warnMsg} button={popupData}></Modal>
       <div className={styles.wrap}>
         <div className={styles.input_wrap}>
           <BaseInputWithCancel
@@ -226,6 +264,7 @@ export default function Register() {
             beforelabel={'password'}
           ></BaseInputWithCancel>
 
+          {password + '비밀번로'}
           <BaseInputWithCancel
             value={passwordConfirm}
             inputClick={inputClick}
@@ -261,7 +300,7 @@ export default function Register() {
           <div>{warnMsg}</div>
           <ColorButton
             onClick={() =>
-              warnMsg || id === '' || password === '' ? showModal() : login()
+              warnMsg || id === '' || password === '' ? showModal() : register()
             }
             backgroundColor={'red'}
             color={'yellow'}
