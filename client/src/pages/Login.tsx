@@ -11,12 +11,13 @@ import {
   userIdState,
   currentTargetState,
   loginFlagState,
+  loadingState,
 } from '../atoms';
 import { loginUser } from '_actions/user_action';
 import { useDispatch } from 'react-redux';
 import { createCipheriv } from 'crypto';
 import { useOutletContext } from 'react-router-dom';
-
+import UseAsync from 'utill/useAsync';
 export default function Login() {
   const location = useNavigate();
   const context: { locateView: Function } = useOutletContext();
@@ -60,6 +61,7 @@ export default function Login() {
     password: { string: '비밀번호', value: password, reg: true },
   });
   const [warnMsg, setWarnMsg] = useState<string | null>(null);
+
   const insertId = (e: React.ChangeEvent) => {
     let value =
       typeof e === 'object' ? (e.target as HTMLInputElement).value : e;
@@ -111,14 +113,26 @@ export default function Login() {
   useEffect(() => {
     setWarnMsg(null);
   }, []);
+  // const [excute, setExcute] = useState(false);
+  // const response: {
+  //   [key: string]: any;
+  // } = UseAsync(dispatch(loginUser({ user_id: id, password })), excute);
+  // const { execute } = {
+  //   execute: () => {
+  //     return [];
+  //   },
+  // };
+  const { execute } = UseAsync(
+    () => dispatch(loginUser({ user_id: id, password })),
+    false
+  );
+
   const login = async () => {
     if (!id && !password) {
       setWarnMsg('아이디을 입력해주세요!');
     }
+    const response = await execute();
     try {
-      const response: {
-        [key: string]: any;
-      } = await dispatch(loginUser({ user_id: id, password }));
       console.log(response, 'response');
       if (!response.payload.loginSuccess) {
         showModal(response.payload.message);

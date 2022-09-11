@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Modal from 'components/Modal';
 import styles from 'styled/Login.module.css';
 import ColorButton from 'components/ColorButton';
+import UseAsync from 'utill/useAsync';
 import BaseInput from 'components/BaseInput';
 import { useRecoilState } from 'recoil';
 import {
@@ -211,11 +212,14 @@ export default function Register() {
   useEffect(() => {
     setWarnMsg(null);
   }, []);
+
+  const { execute } = UseAsync(
+    () => dispatch(registerUser({ user_id: id, password })),
+    false
+  );
   const register = async () => {
     try {
-      const response: {
-        [key: string]: any;
-      } = await dispatch(registerUser({ user_id: id, password, email, name }));
+      const response = await execute();
       console.log({ user_id: id, password, email, name });
       console.log(response, 'response');
       if (!response.payload.success) {

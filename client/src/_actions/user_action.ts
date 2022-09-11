@@ -1,12 +1,20 @@
 // import axios from 'axios';
 import UseFetch from 'utill/UseFetch';
+import UseAsync from 'utill/useAsync';
+import { useRecoilState as UseRecoilState } from 'recoil';
+import { loadingState } from '../atoms';
+
 import { LOGIN_USER, REGISTER_USER } from './types';
 export function loginUser(dataToSubmit: any) {
-  const request = UseFetch({
-    method: 'post',
-    url: 'api/users/login',
-    data: dataToSubmit,
-  });
+  // const [loading, setLoading] = UseRecoilState(loadingState);
+  const request =
+    // UseAsync(
+    UseFetch({
+      method: 'post',
+      url: 'api/users/login',
+      data: dataToSubmit,
+    });
+  // );
   // axios
   //   .post('api/users/login', dataToSubmit)
   //   .then(response => response.data);
