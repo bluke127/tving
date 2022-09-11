@@ -74,7 +74,7 @@ export default function Login() {
     console.log(context.locateView);
 
     if (loginFlag) {
-      context.locateView();
+      context.locateView('/tving');
     }
   }, []);
   const checkId = useMemo(() => {
@@ -125,7 +125,7 @@ export default function Login() {
       } else {
         sessionStorage.setItem('userInfo', id);
         setLoginFlag(true);
-        context.locateView();
+        context.locateView('/tving');
       }
     } catch (e) {
       console.log(e);
