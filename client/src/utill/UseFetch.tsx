@@ -1,6 +1,3 @@
-import { useState, useEffect } from 'react';
-import { useRecoilState } from 'recoil';
-import { loadingState } from '../atoms';
 import axios from 'axios';
 type Methods = 'head' | 'options' | 'put' | 'post' | 'patch' | 'delete' | 'get';
 function UseFetch({
