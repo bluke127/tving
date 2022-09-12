@@ -1,25 +1,23 @@
 import React, { forwardRef } from 'react';
-import Stone from 'components/Stone';
 import styled from 'styled/Header.module.css';
-import {
-  useRecoilState,
-  useRecoilValue,
-  useSetRecoilState,
-  useResetRecoilState,
-} from 'recoil';
-import { useNavigate, useLocation } from 'react-router-dom';
-
-import {
-  modalFlagState,
-  countState,
-  userIdState,
-  loginFlagState,
-} from '../atoms';
-import BaseInput from 'components/BaseInput';
+import { useRecoilValue } from 'recoil';
+import { useDispatch } from 'react-redux';
+import UseAsync from 'utill/useAsync';
+import { userIdState, loginFlagState } from '../atoms';
+import { logoutUser } from '_actions/user_action';
 const Header = forwardRef((props: any, ref: any) => {
   const SearchImg = <div>서취</div>;
   const user = useRecoilValue(userIdState);
   let loginFlag = useRecoilValue(loginFlagState);
+  const dispatch = useDispatch();
+  const logout = () => {
+    sessionStorage.removeItem('userInfo');
+
+    const { execute } = UseAsync(
+      () => dispatch(logoutUser({ user_id: id, password })),
+      false
+    );
+  };
   return (
     <div className={styled.header_wrap} ref={ref}>
       {loginFlag ? (
@@ -31,6 +29,7 @@ const Header = forwardRef((props: any, ref: any) => {
           <li onClick={() => props.locateView('tv')}>Tv</li>
           <li>저장리스트</li>
           <li>{user} 님 환영합니다.</li>
+          <li onClick={() => logout()}>로그아웃</li>
         </ul>
       ) : (
         <ul>

@@ -11,4 +11,9 @@
   height: 20vh;
   position: fixed;
   gap: 1em;
+  position: relative;
+}
+.header_wrap ul:last-child {
+  position: absolute;
+  right: 0;
 }
