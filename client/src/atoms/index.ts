@@ -50,6 +50,10 @@ export const headerState = atom({
   key: 'header',
   default: null,
 });
+export const userNameState = atom({
+  key: 'userName',
+  default: '',
+});
 
 export const currentTargetSelector = selector({
   key: 'currentTargetSelector',

@@ -11,7 +11,7 @@ import {
   userIdState,
   currentTargetState,
   loginFlagState,
-  loadingState,
+  userNameState,
 } from '../atoms';
 import { loginUser } from '_actions/user_action';
 import { useDispatch } from 'react-redux';
@@ -27,6 +27,7 @@ export default function Login() {
   const [currentTarget, setCurrentTarget] =
     useRecoilState<any>(currentTargetState);
   const [userId, setUserId] = useRecoilState(userIdState);
+  const [name, setName] = useRecoilState(userNameState);
   const inputClick = (e: React.MouseEvent) => {
     setCurrentTarget(e.currentTarget as HTMLInputElement);
   };
@@ -137,6 +138,8 @@ export default function Login() {
       if (!response.payload.loginSuccess) {
         showModal(response.payload.message);
       } else {
+        setName(response.payload.name);
+
         sessionStorage.setItem('userInfo', id);
         setLoginFlag(true);
         context.locateView('/tving');
