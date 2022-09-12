@@ -7,7 +7,7 @@ function UseFetch({
 }: {
   url: string;
   method: Methods;
-  data: any;
+  data?: any;
 }) {
   //   const [response, setResponse] = useState([]);
   //   const [loading, setLoading] = useRecoilState(loadingState);
