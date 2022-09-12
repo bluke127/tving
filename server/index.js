@@ -64,10 +64,11 @@ app.post('/api/users/login', (req, res) => {
         console.log(user, '유저');
         if (err) return res.status(400).send(err);
         //토큰을 저장한다, 어디에? 쿠키, 로컬스터리지?
-        res
-          .cookie('x_auth', user.token)
-          .status(200)
-          .json({ loginSuccess: true, id: user._id });
+        res.cookie('x_auth', user.token).status(200).json({
+          loginSuccess: true,
+          id: user._id,
+          name: user.name,
+        });
       });
     });
   });
