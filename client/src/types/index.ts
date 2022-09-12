@@ -11,3 +11,10 @@ export interface AxiosResponse<T = never> {
 export type unknownObj = {
   [key: string]: any;
 };
+
+export type buttonType = {
+  color: string | null;
+  backgroundColor: string | null;
+  func?: Function;
+  text: string | null;
+};
