@@ -1,4 +1,4 @@
-import React, { forwardRef, useState } from 'react';
+import React, { forwardRef, useState, useMemo, useEffect } from 'react';
 import styled from 'styled/Header.module.css';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { useDispatch } from 'react-redux';
@@ -10,39 +10,57 @@ import {
   loginFlagState,
   userNameState,
   modalFlagState,
+  modalDataState,
 } from '../atoms';
 import { logoutUser } from '_actions/user_action';
 import { exitCode } from 'process';
+import { useMatch } from 'react-router-dom';
 const Header = forwardRef((props: any, ref: any) => {
   const SearchImg = <div>서취</div>;
   const user = useRecoilValue(userIdState);
-  let loginFlag = useRecoilValue(loginFlagState);
+  const [loginFlag, setLoginFlag] = useRecoilState(loginFlagState);
   const [modalFlag, setModalFlagState] = useRecoilState(modalFlagState);
   const [userName, setUserName] = useRecoilState(userNameState);
   const [modalMsg, setModalMsg] = useState('');
-  const { execute } = UseAsync(() => dispatch(logoutUser()), false);
 
   const dispatch = useDispatch();
-  const logout = () => {
-    execute();
+  const { execute } = UseAsync(() => dispatch(logoutUser()), false);
+  const logout = async () => {
+    const res = await execute();
+    console.log(res);
     sessionStorage.removeItem('userInfo');
     setUserName('');
     setModalMsg('로그아웃됨');
     return setModalFlagState(true);
   };
+  const [modalData, setModalData] = useRecoilState(modalDataState);
+  const getModalData = useMemo(() => {
+    return {
+      ...modalData,
+      warnMsg: null,
+      button: [
+        {
+          text: '확인',
+          backgroundColor: 'blue',
+          color: '#fff',
+          func: () => {
+            console.log(props, 'props');
+            props.locateView('', true);
+            setLoginFlag(false);
+          },
+        },
+      ],
+      message: modalMsg,
+    };
+  }, [modalMsg]);
+  useEffect(() => {
+    setLoginFlag(loginFlag);
+  }, [loginFlag]);
+  useEffect(() => {
+    setModalData(getModalData);
+  }, [getModalData]);
   return (
     <div className={styled.header_wrap} ref={ref}>
-      <Modal
-        warnMsg={modalMsg}
-        button={[
-          {
-            text: '확인',
-            backgroundColor: 'blue',
-            color: '#fff',
-            func: () => props.locateView(''),
-          },
-        ]}
-      ></Modal>
       {loginFlag ? (
         <ul>
           <li>

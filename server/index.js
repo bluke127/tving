@@ -93,10 +93,10 @@ app.get('/api/users/auth', auth, (req, res) => {
 });
 
 app.get('/api/users/logout', auth, (req, res) => {
-  console.log(req, 'req입니다');
+  console.log(req.user, 'req입니다');
   User.findOneAndUpdate({ _id: req.user._id }, { token: '' }, (err, user) => {
     if (err) return res.json({ success: false, err });
-    return res.staus(200).send({ success: true });
+    return res.status(200).send({ success: true });
   });
 });
 app.listen(port, () => {
