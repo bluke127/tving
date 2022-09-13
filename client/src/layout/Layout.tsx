@@ -17,7 +17,7 @@ import {
   headerState,
 } from '../atoms';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-
+import Modal from 'components/Modal';
 // import AppStateProvider from 'providers/AppStateProvider';
 export default function Layout() {
   const param = useLocation();
@@ -36,18 +36,23 @@ export default function Layout() {
   const [offset, setOffset] = useRecoilState(offsetState);
   let [loginFlag, setLoginFlag] = useRecoilState(loginFlagState);
   useEffect(() => {
-    setLoginFlag(
-      (sessionStorage.getItem('userInfo') !== null ||
-        sessionStorage.getItem('userInfo') !== undefined) as boolean
-    );
+    setLoginFlag((sessionStorage.getItem('userInfo') !== null) as boolean);
     console.log(loginFlag, '바뀌나');
   }, [loginFlag]);
-  const locateView = (type: string) => {
+  const locateView = (type: string, logoutFlag = false) => {
     setOffset({ ...offset, selectedOffset: type ?? 'header' });
-    if (param.pathname === '/' || param.pathname === '/register') {
+
+    // if (param.pathname === '/' || param.pathname === '/register') {
+    //   return location(type);
+    // }
+    alert(param.pathname + 'param.pathname');
+    if (
+      param.pathname === '/' ||
+      param.pathname === '/register' ||
+      logoutFlag
+    ) {
       return location(type);
-    }
-    if (param.pathname !== '/tving') {
+    } else if (param.pathname !== '/tving') {
       location('/tving');
     }
   };
@@ -56,7 +61,6 @@ export default function Layout() {
   useEffect(() => {
     console.log(sessionStorage.getItem('userInfo'));
     setLoginFlag(sessionStorage.getItem('userInfo') !== null);
-    alert(sessionStorage.getItem('userInfo') !== null);
     if (param.pathname === '/tving') {
       console.log(sessionStorage.getItem('userInfo'), 'userInfo');
       if (!loginFlag) {
@@ -65,12 +69,18 @@ export default function Layout() {
     }
     setLoading(false);
   }, []);
+  useEffect(() => {
+    if (param.pathname !== '/tving') {
+      window.scrollTo({ top: 0 });
+    }
+  }, [param.pathname]);
 
   useEffect(() => {
     if (headerRef) setHeaderS(headerRef.current);
   }, [headerRef]);
   return (
     <>
+      <Modal></Modal>
       <Header
         locateView={locateView}
         ref={headerRef}
@@ -88,7 +98,9 @@ export default function Layout() {
           </div>
         </div>
       ) : null}
-      <Outlet context={{ locateView: locateView }} />
+      <div className={styled.content_wrap}>
+        <Outlet context={{ locateView: locateView }} />
+      </div>
       {/* </div> */}
     </>
   );

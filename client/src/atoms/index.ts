@@ -1,8 +1,25 @@
+import { buttonType } from 'types';
 import { atom, selector, useRecoilState, useRecoilValue } from 'recoil';
 
 export const modalFlagState = atom({
   key: 'modalFlag',
   default: false,
+});
+
+type ModalProps = {
+  message?: string | number | null;
+  warnMsg?: string | number | null;
+  children?: string | number | null;
+  button?: buttonType[];
+};
+export const modalDataState = atom<ModalProps>({
+  key: 'modalData',
+  default: {
+    message: '',
+    warnMsg: '',
+    children: null,
+    button: [{ color: '', text: '', func: null, backgroundColor: '' }],
+  },
 });
 export const countState = atom({
   key: 'counter',

@@ -12,6 +12,7 @@ import {
   currentTargetState,
   loginFlagState,
   userNameState,
+  modalDataState,
 } from '../atoms';
 import { loginUser } from '_actions/user_action';
 import { useDispatch } from 'react-redux';
@@ -21,8 +22,7 @@ import UseAsync from 'utill/useAsync';
 export default function Login() {
   const location = useNavigate();
   const context: { locateView: Function } = useOutletContext();
-  const [modalFlag, setModalFlagState] =
-    useRecoilState<boolean>(modalFlagState);
+  const [modalFlag, setModalFlag] = useRecoilState<boolean>(modalFlagState);
   const dispatch = useDispatch();
   const [currentTarget, setCurrentTarget] =
     useRecoilState<any>(currentTargetState);
@@ -37,7 +37,7 @@ export default function Login() {
     } else if (msg) {
       setWarnMsg(msg);
     }
-    setModalFlagState(true);
+    setModalFlag(true);
   };
   const idReg: RegExp = /^[a-z]+[a-z0-9]{5,19}$/g;
   const passwordReg: RegExp = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
@@ -61,8 +61,26 @@ export default function Login() {
     id: { string: '아이디', value: id, reg: true },
     password: { string: '비밀번호', value: password, reg: true },
   });
-  const [warnMsg, setWarnMsg] = useState<string | null>(null);
+  const [warnMsg, setWarnMsg] = useState('');
+  const [modalData, setModalData] = useRecoilState(modalDataState);
 
+  const getModalData = useMemo(() => {
+    return {
+      ...modalData,
+      button: [
+        {
+          text: '확인',
+          backgroundColor: 'blue',
+          color: '#fff',
+          func: () => setModalFlag(false),
+        },
+      ],
+      warnMsg: warnMsg,
+    };
+  }, [warnMsg]);
+  useEffect(() => {
+    setModalData(getModalData);
+  }, [getModalData]);
   const insertId = (e: React.ChangeEvent) => {
     let value =
       typeof e === 'object' ? (e.target as HTMLInputElement).value : e;
@@ -112,7 +130,7 @@ export default function Login() {
   }, [id, password]);
 
   useEffect(() => {
-    setWarnMsg(null);
+    setWarnMsg('');
   }, []);
   // const [excute, setExcute] = useState(false);
   // const response: {
@@ -131,7 +149,12 @@ export default function Login() {
   const login = async () => {
     if (!id && !password) {
       setWarnMsg('아이디을 입력해주세요!');
+      return showModal(warnMsg);
+    } else if (warnMsg) {
+      setWarnMsg(warnMsg);
+      return showModal(warnMsg);
     }
+
     const response = await execute();
     try {
       console.log(response, 'response');
@@ -139,7 +162,6 @@ export default function Login() {
         showModal(response.payload.message);
       } else {
         setName(response.payload.name);
-
         sessionStorage.setItem('userInfo', id);
         setLoginFlag(true);
         context.locateView('/tving');
@@ -163,17 +185,6 @@ export default function Login() {
   // };
   return (
     <>
-      <Modal
-        warnMsg={warnMsg}
-        button={[
-          {
-            text: '확인',
-            backgroundColor: 'blue',
-            color: '#fff',
-          },
-          { text: '취소', backgroundColor: 'lightGray', color: '#000' },
-        ]}
-      ></Modal>
       {/* <button onClick={() => setCounter((num) => num + 1)}>+</button>
       <button onClick={() => setCounter((num) => num - 1)}>-</button> */}
       {/* <button onClick={plusCount}>+</button>
@@ -216,13 +227,7 @@ export default function Login() {
             ) : null}
           </div>
           <div>{warnMsg}</div>
-          <ColorButton
-            onClick={() =>
-              warnMsg || id === '' || password === '' ? showModal() : login()
-            }
-            backgroundColor={'red'}
-            color={'yellow'}
-          >
+          <ColorButton onClick={login} backgroundColor={'red'} color={'yellow'}>
             로그인
           </ColorButton>
         </div>

@@ -9,21 +9,23 @@ import {
   useRecoilValue,
 } from 'recoil';
 import { buttonType } from 'types';
-import { modalFlagState } from '../atoms';
+import { modalFlagState, modalDataState } from '../atoms';
 import Portal from 'utill/Portal';
 import { useNavigate } from 'react-router';
 type ModalProps = {
   message?: string | number | null;
-  warnMsg: string | number | null;
+  warnMsg?: string | number | null;
   children?: string | number | null;
-  button: buttonType[];
+  button?: buttonType[];
 };
-export default function Modal({
-  message,
-  warnMsg,
-  children,
-  button,
-}: ModalProps) {
+export default function Modal() {
+  // {
+  //   message,
+  //   warnMsg,
+  //   children,
+  //   button,
+  // }: ModalProps
+  const { message, warnMsg, children, button } = useRecoilValue(modalDataState);
   const [modalMsg, setModalMsg] = useState<string | number | null>(null);
   useEffect(() => {
     warnMsg ? setModalMsg(warnMsg) : setModalMsg(message as string);
@@ -40,7 +42,7 @@ export default function Modal({
           <div className={styled.modal}>
             {children ? <div>{children}</div> : <div>{modalMsg}</div>}
             <div className={styled.btn_wrap}>
-              {button.map((buttonItem: buttonType, index: number) => {
+              {button?.map((buttonItem: buttonType, index: number) => {
                 return (
                   <ColorButton
                     key={index}

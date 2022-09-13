@@ -15,7 +15,9 @@ const UseAsync = (asyncFunction: any, immediate = false) => {
         return response;
       })
       .catch((error: any) => {
+        console.log(error, 'error');
         setLoading(false);
+        return error;
       });
   }, [asyncFunction]);
   // Call execute if we want to fire it right away.

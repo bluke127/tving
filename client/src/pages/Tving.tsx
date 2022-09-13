@@ -10,14 +10,20 @@ import React, {
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled/Tving.module.css';
 import { Element, animateScroll } from 'react-scroll';
-import { loadingState, headerState } from '../atoms';
+import {
+  modalFlagState,
+  offsetState,
+  userIdState,
+  loadingState,
+  headerState,
+  modalDataState,
+} from '../atoms';
 import {
   useRecoilState,
   useRecoilValue,
   useSetRecoilState,
   useResetRecoilState,
 } from 'recoil';
-import { modalFlagState, countState, offsetState, userIdState } from '../atoms';
 import { getTopMovie } from 'services/movie';
 import { getTopTv } from 'services/tv';
 import { getSearchMedia } from 'services/search';
@@ -106,15 +112,6 @@ export default function Tving() {
     } else if (scrollY >= movieOffset) {
       v = 'tv';
     }
-    console.log(
-      '화이팅',
-
-      header,
-      movieOffset,
-      tvOffset,
-      v,
-      areaName
-    );
     setAreaName(v as string);
   }, [scrollY]);
   const setIndex = useCallback(
@@ -211,6 +208,7 @@ export default function Tving() {
   }, [topTvList, topMovieList]);
   const [slideMoveList, slideSetMovieList] = useState([]);
   const [slideTvList, slideSetTvList] = useState([]);
+  const [modalData, setModalData] = useRecoilState(modalDataState);
   useEffect(() => {
     console.log(tvWrap, movieWrap, 200);
 
@@ -223,40 +221,16 @@ export default function Tving() {
 
   useEffect(() => {
     if (movieWrap && movieWrap.current) {
-      console.log(
-        movieWrap.current,
-        'movieWrap',
-        (movieWrap.current as HTMLElement)?.offsetTop
-      );
-
       (movieWrap.current as HTMLElement).style.height =
         window.screen.availHeight + 'px';
 
       setMovieOffset((movieWrap.current! as HTMLElement)?.offsetTop);
     }
-    console.log(
-      offset,
-      movieWrap.current,
-      (movieWrap.current! as HTMLElement)?.offsetTop,
-      '섹스m'
-    );
   }, [movieWrap.current]);
 
   useEffect(() => {
     if (tvWrap && tvWrap.current) {
-      console.log(
-        tvWrap.current,
-        'tvWrap',
-        (tvWrap.current! as HTMLElement)?.offsetTop
-      );
-
       setTvOffset((tvWrap.current! as HTMLElement)?.offsetTop);
-      console.log(
-        offset,
-        tvWrap.current,
-        (tvWrap.current! as HTMLElement)?.offsetTop,
-        '섹스2'
-      );
       (tvWrap.current as HTMLElement).style.height =
         window.screen.availHeight + 'px';
     }
@@ -271,7 +245,25 @@ export default function Tving() {
     setIndex(offset.selectedOffset, i as number, 'headerEvent');
     setAreaName(offset.selectedOffset);
   }, [offset.selectedOffset]);
-  const [warnMsg, setWarnMsg] = useState<string | null>(null);
+  const [warnMsg, setWarnMsg] = useState<string | null>('');
+
+  const getModalData = useMemo(() => {
+    return {
+      ...modalData,
+      button: [
+        {
+          text: '확인',
+          backgroundColor: 'blue',
+          color: '#fff',
+          func: () => setModalFlagState(false),
+        },
+      ],
+      warnMsg: warnMsg,
+    };
+  }, [warnMsg]);
+  useEffect(() => {
+    setModalData(getModalData);
+  }, [getModalData]);
   const searchEvent = useCallback(
     async (e: KeyboardEvent) => {
       let areaN = areaName;
@@ -379,17 +371,6 @@ export default function Tving() {
         {wrapArrayIndex + '인텍스'}
         {/* {topMovieList.every(e => e.complete) + 'movie'} */}
       </div>
-      <Modal
-        warnMsg={warnMsg}
-        button={[
-          {
-            text: '확인',
-            backgroundColor: 'blue',
-            color: '#fff',
-            func: () => setLoading(false),
-          },
-        ]}
-      ></Modal>
 
       <div>
         <Search searchType={searchType} searchEvent={searchEvent}></Search>

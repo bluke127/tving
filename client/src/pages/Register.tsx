@@ -11,6 +11,7 @@ import {
   userIdState,
   currentTargetState,
   loginFlagState,
+  modalDataState,
 } from '../atoms';
 import { registerUser } from '_actions/user_action';
 import { useDispatch } from 'react-redux';
@@ -24,7 +25,7 @@ export default function Register() {
   const context: { locateView: Function } = useOutletContext();
   const [modalFlag, setModalFlagState] =
     useRecoilState<boolean>(modalFlagState);
-  const [popupData, setPopupData] = useState<buttonType[]>([
+  const [popupButtonData, setPopupButtonData] = useState<buttonType[]>([
     {
       text: '확인',
       backgroundColor: 'blue',
@@ -93,6 +94,7 @@ export default function Register() {
     name: { string: '이름', value: name, reg: true },
   });
   const [warnMsg, setWarnMsg] = useState<string | null>(null);
+  const [modalData, setModalData] = useRecoilState(modalDataState);
   const baseInputStyle = {
     BaseInput: {
       input: { backgroundColor: 'lightcoral' },
@@ -213,6 +215,16 @@ export default function Register() {
     setWarnMsg(null);
   }, []);
 
+  const getModalData = useMemo(() => {
+    return {
+      ...modalData,
+      button: popupButtonData,
+      warnMsg: warnMsg,
+    };
+  }, [warnMsg, popupButtonData]);
+  useEffect(() => {
+    setModalData(getModalData);
+  }, [getModalData]);
   const { execute } = UseAsync(
     () => dispatch(registerUser({ user_id: id, password })),
     false
@@ -225,13 +237,12 @@ export default function Register() {
       if (!response.payload.success) {
         showModal(response.payload.message);
       } else {
-        setPopupData([
+        setPopupButtonData([
           {
             text: '확인',
             backgroundColor: 'blue',
             color: '#fff',
             func: () => {
-              alert();
               context.locateView('/');
             },
           },
@@ -244,7 +255,6 @@ export default function Register() {
   };
   return (
     <>
-      <Modal warnMsg={warnMsg} button={popupData}></Modal>
       <div className={styles.wrap}>
         <div className={styles.input_wrap}>
           <BaseInputWithCancel
@@ -268,7 +278,6 @@ export default function Register() {
             beforelabel={'password'}
           ></BaseInputWithCancel>
 
-          {password + '비밀번로'}
           <BaseInputWithCancel
             value={passwordConfirm}
             inputClick={inputClick}

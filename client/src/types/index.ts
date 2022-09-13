@@ -13,8 +13,8 @@ export type unknownObj = {
 };
 
 export type buttonType = {
-  color: string | null;
-  backgroundColor: string | null;
-  func?: Function;
-  text: string | null;
+  color?: string | null;
+  backgroundColor?: string | null;
+  func?: Function | null;
+  text?: string | null;
 };
