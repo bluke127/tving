@@ -11,24 +11,17 @@ import {
 } from 'recoil';
 import styled from 'styled/Img.module.css';
 import { loadingState, headerState } from '../atoms';
-
 export default function Img(props: any) {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useRecoilState(loadingState);
   const imgRef = useRef();
-  const onLoad = () => {
-    //   // alert();
-    // setLoading(false);
-    // console.log('load');
-  };
   useEffect(() => {
-    setLoading(true);
-    console.log('useEffect');
-  }, []);
-
-  useEffect(() => {
-    if (imgRef.current) setLoading(false);
+    // if (imgRef.current) setLoading(false);
     console.log('img');
   }, [imgRef.current]);
+
+  useEffect(() => {
+    setLoading(true);
+  }, []);
   return (
     <span className={styled.img_wrap}>
       {loading ? <span className={styled.loading}>로딩중</span> : null}

@@ -191,7 +191,6 @@ export default function Tving() {
     } finally {
       if (wrapArrayIndex == null) setWrapArrayIndex(0);
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      setLoading(false);
     }
   }, []);
   useEffect(() => {
@@ -203,9 +202,18 @@ export default function Tving() {
     };
     setList();
   }, []);
-  useEffect(() => {
-    completeImgLoaded();
-  }, [topTvList, topMovieList]);
+  const ab = useMemo<boolean>(() => {
+    return (topTvList as any[]).every(e => e.complete);
+  }, [topTvList.map(e => e!.complete)]);
+  const b = useMemo<boolean>(() => {
+    return (topMovieList as any[]).every(e => e.complete);
+  }, [topMovieList.map(e => e!.complete)]);
+  // useEffect(() => {
+  //   completeImgLoaded(
+  //     (topTvList as any[]).every(e => e!.complete) === true &&
+  //       (topMovieList as any[]).every(e => e!.complete) === true
+  //   );
+  // }, [topTvList.map(e => e!.complete), topMovieList.map(e => e!.complete)]);
   const [slideMoveList, slideSetMovieList] = useState([]);
   const [slideTvList, slideSetTvList] = useState([]);
   const [modalData, setModalData] = useRecoilState(modalDataState);
@@ -333,43 +341,48 @@ export default function Tving() {
   // const computedTvImgLoaded = useMemo(() => {
   //   return topTvList.map((e:unknownObj)=> e.complete === true);
   // }, [topTvList]);
-  const completeImgLoaded = () => {
-    //   console.log(
-    //     topMovieList.every(e => e.complete),
-    //     topTvList.every(e => e.complete),
-    //     computedMovieImgLoaded,
-    //     computedTvImgLoaded,
-    //     '컨솔'
-    //   );
+  const completeImgLoaded = (flag?: boolean) => {
+    // alert(!flag + 'flag');
     if (
-      topMovieList.length > 0 &&
-      topMovieList[0] !== null &&
-      topTvList.length > 0 &&
-      topTvList[0] !== null &&
-      (topMovieList as unknownObj[]).every(e => e.complete) &&
-      (topTvList as unknownObj[]).every(e => e.complete)
+      (topTvList as any[]).every(e => e.complete) &&
+      (topMovieList as any[]).every(e => e.complete)
     ) {
       setLoading(false);
-    } else {
-      setLoading(true);
     }
+    // if (
+    //   topMovieList.length > 0 &&
+    //   topMovieList[0] !== null &&
+    //   topTvList.length > 0 &&
+    //   topTvList[0] !== null &&
+    //   (topMovieList as unknownObj[]).every(e => e.complete) &&
+    //   (topTvList as unknownObj[]).every(e => e.complete)
+    // ) {
+    //   setLoading(false);
+    // } else {
+    //   setLoading(true);
+    // }
+    // }
   };
   const handleComplete = (list: unknownObj[], i: number, t: string) => {
     if (list[0] !== null) {
       list[i].complete = true;
-      completeImgLoaded();
     }
-    // completeImgLoaded();
+    completeImgLoaded();
   };
 
   return (
     <div className={styled.content_wrap}>
       <div style={{ width: '100px', height: '50px', position: 'fixed' }}>
-        {/* {topTvList.every(e => e.complete) + 'tv'} */}
+        {JSON.stringify((topTvList as any[]).map(e => e.complete)) + 'tv'}
+        {JSON.stringify((topMovieList as any[]).map(e => e.complete)) + 'movie'}
+        {JSON.stringify((topTvList as any[]).every(e => e.complete)) + 'tv'}
+        {JSON.stringify((topMovieList as any[]).every(e => e.complete)) +
+          'movie'}
         {areaName + '에러이알 넴임'}
+        {JSON.stringify(ab)}+abbbbbbbb
+        {JSON.stringify(b)}+bbbbbb
         {JSON.stringify(offset) + '지'}
         {wrapArrayIndex + '인텍스'}
-        {/* {topMovieList.every(e => e.complete) + 'movie'} */}
       </div>
 
       <div>
@@ -396,19 +409,21 @@ export default function Tving() {
                           <Link to={`/main/movie/${e!.id}`}>
                             <Img
                               src={e!.backdrop_path}
-                              onLoad={() =>
+                              onLoad={() => {
                                 handleComplete(
                                   topMovieList as unknownObj[],
                                   i,
                                   'load'
-                                )
-                              }
+                                );
+                                e!.complete = true;
+                              }}
                               onError={() => {
                                 handleComplete(
                                   topMovieList as unknownObj[],
                                   i,
                                   'load'
                                 );
+                                e!.complete = true;
                               }}
                               // onError={handleComplete(topMovieList, i)}
                             />
@@ -431,20 +446,22 @@ export default function Tving() {
                           <Link to={`/main/movie/${e!.id}`}>
                             <Img
                               src={e!.backdrop_path}
-                              onLoad={() =>
+                              onLoad={() => {
                                 handleComplete(
                                   topMovieList as unknownObj[],
                                   i + Math.abs(topMovieList.length / 2),
                                   'load'
-                                )
-                              }
-                              onError={() =>
+                                );
+                                e!.complete = true;
+                              }}
+                              onError={() => {
                                 handleComplete(
                                   topMovieList as unknownObj[],
                                   i + Math.abs(topMovieList.length / 2),
                                   'load'
-                                )
-                              }
+                                );
+                                e!.complete = true;
+                              }}
                               // onError={handleComplete(
                               //   topMovieList,
                               //   i + Math.abs(topMovieList.length / 2)
@@ -480,20 +497,23 @@ export default function Tving() {
                           <Link to={`/main/tv/${e!.id}`}>
                             <Img
                               src={e!.backdrop_path}
-                              onLoad={() =>
+                              onLoad={() => {
                                 handleComplete(
                                   topTvList as unknownObj[],
                                   i,
                                   'load'
-                                )
-                              }
-                              onError={() =>
+                                );
+
+                                e!.complete = true;
+                              }}
+                              onError={() => {
                                 handleComplete(
                                   topTvList as unknownObj[],
                                   i,
                                   'load'
-                                )
-                              }
+                                );
+                                e!.complete = true;
+                              }}
                               // onError={handleComplete(topTvList, i)}
                             />
                           </Link>
@@ -515,20 +535,22 @@ export default function Tving() {
                           <Link to={`/main/tv/${e!.id}`}>
                             <Img
                               src={e!.backdrop_path}
-                              onLoad={() =>
+                              onLoad={() => {
                                 handleComplete(
                                   topTvList as unknownObj[],
                                   i + Math.abs(topTvList.length / 2),
                                   'load'
-                                )
-                              }
-                              onError={() =>
+                                );
+                                e!.complete = true;
+                              }}
+                              onError={() => {
                                 handleComplete(
                                   topTvList as unknownObj[],
                                   i + Math.abs(topTvList.length / 2),
                                   'load'
-                                )
-                              }
+                                );
+                                e!.complete = true;
+                              }}
                               // onError={handleComplete(
                               //   topTvList,
                               //   i + Math.abs(topTvList.length / 2)
