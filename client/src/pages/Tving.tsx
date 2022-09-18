@@ -1,13 +1,5 @@
-import React, {
-  Component,
-  useEffect,
-  useState,
-  useMemo,
-  useCallback,
-  useRef,
-  useContext,
-} from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useState, useMemo, useCallback, useRef, lazy } from 'react';
+import { Link } from 'react-router-dom';
 import styled from 'styled/Tving.module.css';
 import { Element, animateScroll } from 'react-scroll';
 import {
@@ -18,24 +10,19 @@ import {
   headerState,
   modalDataState,
 } from '../atoms';
-import {
-  useRecoilState,
-  useRecoilValue,
-  useSetRecoilState,
-  useResetRecoilState,
-} from 'recoil';
-import { getTopMovie } from 'services/movie';
-import { getTopTv } from 'services/tv';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { getTopMovie, getPopularMovie } from 'services/movie';
+import { getTopTv, getPopularTv } from 'services/tv';
 import { getSearchMedia } from 'services/search';
 import { css } from '@emotion/react';
-import ClipLoader from 'react-spinners/ClipLoader';
 import Carousel from 'components/Carousel';
 import Search from 'components/Search';
-
-import Modal from 'components/Modal';
-import Img from 'components/Img';
+import ColorButton from 'components/ColorButton';
 import { useOutletContext } from 'react-router-dom';
-import { unknownObj, AxiosResponse } from 'types/index';
+import { unknownObj } from 'types/index';
+import Img from 'components/Img';
+
+// const Img = lazy(() => import('components/Img'));
 export default function Tving() {
   const locatedView = useOutletContext();
   useEffect(() => {
@@ -55,6 +42,10 @@ export default function Tving() {
   //movie리스트와 tv리스트를 담아줄 useState
   const [topMovieList, setTopMovieList] = useState<unknownObj[] | null[]>([]);
   const [topTvList, setTopTvList] = useState<unknownObj[] | null[]>([]);
+  const [popularMovieList, setPopularMovieList] = useState<
+    unknownObj[] | null[]
+  >([]);
+  const [popularTvList, setPopularTvList] = useState<unknownObj[] | null[]>([]);
   const [searchType, setSearchType] = useState<string>('movie');
   const [movieOffset, setMovieOffset] = useState<number>(0);
   const [tvOffset, setTvOffset] = useState<number>(0);
@@ -64,10 +55,11 @@ export default function Tving() {
   const tvWrap = useRef(null);
   const [wrapArrayIndex, setWrapArrayIndex] = useState<number>(0);
   const h: { current: HTMLElement } | null = useRecoilValue(headerState);
-  const a = useRecoilValue(userIdState);
   const header = useMemo<{ current: null | HTMLElement }>(() => {
     return h ? { current: h } : { current: null };
   }, [h]);
+  const [areaName, setAreaName] = useState('header');
+
   const handleScroll = (event: KeyboardEvent) => {
     event.preventDefault();
     setIndex(event.key, wrapArrayIndex);
@@ -95,7 +87,6 @@ export default function Tving() {
       tv: (wrapArray[2]!.current! as HTMLElement)?.offsetTop,
     });
   }, [wrapArray]);
-  const [areaName, setAreaName] = useState('header');
   useEffect(() => {
     let v;
     if (
@@ -162,13 +153,16 @@ export default function Tving() {
     move: false,
   });
   const [pageOffset, setPageOffset] = useState(0);
+  const [movieSortType, setMovieSortType] = useState('top');
+  const [tvSortType, setTvSortType] = useState('top');
+
   const fetchList = useCallback(async () => {
     window.scrollTo({ top: 0 });
     try {
       setLoading(true);
       const [responseMovieList, responseTvList] = await Promise.all([
-        getTopMovie(),
-        getTopTv(),
+        movieSortType === 'top' ? getTopMovie() : getPopularMovie(),
+        tvSortType === 'top' ? getTopTv() : getPopularTv(),
       ]);
       responseTvList.results.length > 0
         ? setTopTvList(
@@ -193,6 +187,57 @@ export default function Tving() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }, []);
+  const fetchTvList = useCallback(async () => {
+    // window.scrollTo({ top: 0 });
+    try {
+      setLoading(true);
+      const responseTvList = await (tvSortType === 'top'
+        ? getTopTv()
+        : getPopularTv(1));
+      responseTvList.results.length > 0
+        ? setTopTvList(
+            responseTvList.results.map((e: unknownObj) => {
+              e.complete = false;
+              return e;
+            })
+          )
+        : setTopTvList([null]);
+    } catch (e) {
+      console.log(e);
+    }
+  }, [tvSortType]);
+  useEffect(() => {
+    const func = async () => {
+      await fetchTvList();
+    };
+    func();
+  }, [tvSortType]);
+  const fetchMovieList = useCallback(async () => {
+    // window.scrollTo({ top: 0 });
+    try {
+      setLoading(true);
+      const responseMovieList = await (movieSortType === 'top'
+        ? getTopMovie()
+        : getPopularMovie(1));
+      responseMovieList.results.length > 0
+        ? setTopMovieList(
+            responseMovieList.results.map((e: unknownObj) => {
+              e.complete = false;
+              return e;
+            })
+          )
+        : setTopMovieList([null]);
+    } catch (e) {
+      console.log(e);
+    }
+  }, [movieSortType]);
+
+  useEffect(() => {
+    const func = async () => {
+      await fetchMovieList();
+    };
+    func();
+  }, [movieSortType]);
   useEffect(() => {
     const setList = async () => {
       await fetchList();
@@ -208,12 +253,12 @@ export default function Tving() {
   const b = useMemo<boolean>(() => {
     return (topMovieList as any[]).every(e => e.complete);
   }, [topMovieList.map(e => e!.complete)]);
-  // useEffect(() => {
-  //   completeImgLoaded(
-  //     (topTvList as any[]).every(e => e!.complete) === true &&
-  //       (topMovieList as any[]).every(e => e!.complete) === true
-  //   );
-  // }, [topTvList.map(e => e!.complete), topMovieList.map(e => e!.complete)]);
+  useEffect(() => {
+    completeImgLoaded(
+      (topTvList as any[]).every(e => e!.complete) === true &&
+        (topMovieList as any[]).every(e => e!.complete) === true
+    );
+  }, [topTvList.map(e => e!.complete), topMovieList.map(e => e!.complete)]);
   const [slideMoveList, slideSetMovieList] = useState([]);
   const [slideTvList, slideSetTvList] = useState([]);
   const [modalData, setModalData] = useRecoilState(modalDataState);
@@ -323,45 +368,18 @@ export default function Tving() {
     },
     [tvWrap.current, movieWrap.current, areaName]
   );
-  useEffect(() => {
-    // if (localStorage.getItem('offset')) {
-    //   window.scrollTo({
-    //     top: pageOffset,
-    //   });
-    // }
-  }, [loading]);
 
   useEffect(() => {
     console.log(movieOffset, tvOffset, '스파이더');
   }, [movieOffset, tvOffset]);
-  // const computedMovieImgLoaded = useMemo(() => {
-  //   return topMovieList.map((e:unknownObj)=> e.complete === true);
-  // }, [topMovieList.map((e:unknownObj)=> e.complete)]);
 
-  // const computedTvImgLoaded = useMemo(() => {
-  //   return topTvList.map((e:unknownObj)=> e.complete === true);
-  // }, [topTvList]);
   const completeImgLoaded = (flag?: boolean) => {
-    // alert(!flag + 'flag');
     if (
       (topTvList as any[]).every(e => e.complete) &&
       (topMovieList as any[]).every(e => e.complete)
     ) {
       setLoading(false);
     }
-    // if (
-    //   topMovieList.length > 0 &&
-    //   topMovieList[0] !== null &&
-    //   topTvList.length > 0 &&
-    //   topTvList[0] !== null &&
-    //   (topMovieList as unknownObj[]).every(e => e.complete) &&
-    //   (topTvList as unknownObj[]).every(e => e.complete)
-    // ) {
-    //   setLoading(false);
-    // } else {
-    //   setLoading(true);
-    // }
-    // }
   };
   const handleComplete = (list: unknownObj[], i: number, t: string) => {
     if (list[0] !== null) {
@@ -389,6 +407,20 @@ export default function Tving() {
         <Search searchType={searchType} searchEvent={searchEvent}></Search>
         <Element name="movieWrap">
           <div ref={movieWrap} className={styled.content}>
+            <ColorButton
+              onClick={() => {
+                setMovieSortType('top');
+              }}
+            >
+              인기순
+            </ColorButton>
+            <ColorButton
+              onClick={() => {
+                setMovieSortType('popular');
+              }}
+            >
+              최신순
+            </ColorButton>
             <Carousel
               setLoading={setLoading}
               setList={slideSetMovieList}
@@ -396,7 +428,7 @@ export default function Tving() {
             ></Carousel>
             <div className={styled.post_wrap}>
               <ul>
-                {topMovieList.length > 0 && topMovieList[0] !== null
+                {topMovieList && topMovieList.length
                   ? topMovieList
                       .slice(0, Math.abs(topMovieList.length / 2))
                       .map((e, i) => (
@@ -433,7 +465,7 @@ export default function Tving() {
                   : null}
               </ul>
               <ul>
-                {topMovieList.length > 0 && topMovieList[0] !== null
+                {topMovieList && topMovieList.length
                   ? topMovieList
                       .slice(Math.abs(topMovieList.length / 2))
                       .map((e, i) => (
@@ -477,6 +509,20 @@ export default function Tving() {
         </Element>
         <Element name="tvWrap">
           <div ref={tvWrap} className={styled.content}>
+            <ColorButton
+              onClick={() => {
+                setTvSortType('top');
+              }}
+            >
+              인기순
+            </ColorButton>
+            <ColorButton
+              onClick={() => {
+                setTvSortType('popular');
+              }}
+            >
+              최신순
+            </ColorButton>
             <Carousel
               setLoading={setLoading}
               setList={slideSetTvList}
@@ -484,7 +530,7 @@ export default function Tving() {
             ></Carousel>
             <div className={styled.post_wrap}>
               <ul>
-                {topTvList.length > 0 && topTvList[0] !== null
+                {topTvList && topTvList.length
                   ? topTvList
                       .slice(0, Math.abs(topTvList.length / 2))
                       .map((e, i) => (
@@ -522,7 +568,7 @@ export default function Tving() {
                   : null}
               </ul>
               <ul>
-                {topTvList.length > 0 && topTvList[0] !== null
+                {topTvList && topTvList.length
                   ? topTvList
                       .slice(Math.abs(topTvList.length / 2))
                       .map((e, i) => (
