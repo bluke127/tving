@@ -96,18 +96,14 @@ export default function Layout() {
       ></Header>
       {/* <div className={styled.wrap}> */}
       {loading ? (
-        <Suspense
-          fallback={
-            <div
-              className={styled.loading_wrap}
-              style={loading ? { overflow: 'hidden' } : {}}
-            >
-              <div className={styled.loading}>
-                <ClipLoader color={color} css={override} size={150} />
-              </div>
-            </div>
-          }
-        ></Suspense>
+        <div
+          className={styled.loading_wrap}
+          style={loading ? { overflow: 'hidden' } : {}}
+        >
+          <div className={styled.loading}>
+            <ClipLoader color={color} css={override} size={150} />
+          </div>
+        </div>
       ) : null}
       <div className={styled.content_wrap}>
         <Outlet context={{ locateView: locateView }} />
