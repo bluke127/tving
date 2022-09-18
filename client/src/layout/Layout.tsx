@@ -1,4 +1,11 @@
-import React, { useRef, forwardRef, useState, useEffect } from 'react';
+import React, {
+  useRef,
+  forwardRef,
+  useState,
+  useEffect,
+  Suspense,
+  lazy,
+} from 'react';
 
 import styled from 'styled/Layout.module.css';
 import Header from 'layout/Header';
@@ -89,14 +96,18 @@ export default function Layout() {
       ></Header>
       {/* <div className={styled.wrap}> */}
       {loading ? (
-        <div
-          className={styled.loading_wrap}
-          style={loading ? { overflow: 'hidden' } : {}}
-        >
-          <div className={styled.loading}>
-            <ClipLoader color={color} css={override} size={150} />
-          </div>
-        </div>
+        <Suspense
+          fallback={
+            <div
+              className={styled.loading_wrap}
+              style={loading ? { overflow: 'hidden' } : {}}
+            >
+              <div className={styled.loading}>
+                <ClipLoader color={color} css={override} size={150} />
+              </div>
+            </div>
+          }
+        ></Suspense>
       ) : null}
       <div className={styled.content_wrap}>
         <Outlet context={{ locateView: locateView }} />

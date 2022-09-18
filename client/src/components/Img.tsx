@@ -24,7 +24,6 @@ export default function Img(props: any) {
   }, []);
   return (
     <span className={styled.img_wrap}>
-      {loading ? <span className={styled.loading}>로딩중</span> : null}
       {!props.isapiresponse ? (
         <img
           ref={imgRef}
