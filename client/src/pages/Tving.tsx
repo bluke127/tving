@@ -12,7 +12,9 @@ import {
 } from '../atoms';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { getTopMovie, getPopularMovie } from 'services/movie';
+// import { getTopMovie } from 'services/movie';
 import { getTopTv, getPopularTv } from 'services/tv';
+// import { getTopTv } from 'services/tv';
 import { getSearchMedia } from 'services/search';
 import { css } from '@emotion/react';
 import Carousel from 'components/Carousel';
@@ -161,8 +163,12 @@ export default function Tving() {
     try {
       setLoading(true);
       const [responseMovieList, responseTvList] = await Promise.all([
-        movieSortType === 'top' ? getTopMovie() : getPopularMovie(),
-        tvSortType === 'top' ? getTopTv() : getPopularTv(),
+        // movieSortType === 'top' ?
+        getTopMovie(),
+        // : getPopularMovie(),
+        // tvSortType === 'top' ?
+        getTopTv(),
+        //  : getPopularTv(),
       ]);
       responseTvList.results.length > 0
         ? setTopTvList(
@@ -191,9 +197,12 @@ export default function Tving() {
     // window.scrollTo({ top: 0 });
     try {
       setLoading(true);
-      const responseTvList = await (tvSortType === 'top'
-        ? getTopTv()
-        : getPopularTv(1));
+      let responseTvList;
+      if (tvSortType === 'top') {
+        responseTvList = await getTopTv(0);
+      } else {
+        responseTvList = await getPopularTv(0);
+      }
       responseTvList.results.length > 0
         ? setTopTvList(
             responseTvList.results.map((e: unknownObj) => {
@@ -216,9 +225,12 @@ export default function Tving() {
     // window.scrollTo({ top: 0 });
     try {
       setLoading(true);
-      const responseMovieList = await (movieSortType === 'top'
-        ? getTopMovie()
-        : getPopularMovie(1));
+      let responseMovieList;
+      if (movieSortType === 'top') {
+        responseMovieList = await getTopMovie(0);
+      } else {
+        responseMovieList = await getPopularMovie(0);
+      }
       responseMovieList.results.length > 0
         ? setTopMovieList(
             responseMovieList.results.map((e: unknownObj) => {

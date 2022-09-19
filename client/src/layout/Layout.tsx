@@ -52,7 +52,6 @@ export default function Layout() {
     // if (param.pathname === '/' || param.pathname === '/register') {
     //   return location(type);
     // }
-    alert(param.pathname + 'param.pathname');
     if (
       param.pathname === '/' ||
       param.pathname === '/register' ||
