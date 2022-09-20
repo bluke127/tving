@@ -17,7 +17,7 @@ export async function getPopularTv(currentPage = 0) {
 }
 
 export async function handleTvListByType(currentPage = 0, type) {
-  type === 'top' ? getTopTv(currentPage) : getPopularTv(currentPage);
+  return type === 'top' ? getTopTv(currentPage) : getPopularTv(currentPage);
 }
 export async function getDetailTv(id) {
   const detailUrl = `/tv/${id}?api_key=${API_KEY}`;

@@ -16,7 +16,9 @@ export async function getPopularMovie(currentPage = 0) {
   return response;
 }
 export async function handleMovieListByType(currentPage = 0, type) {
-  type === 'top' ? getTopMovie(currentPage) : getPopularMovie(currentPage);
+  return type === 'top'
+    ? getTopMovie(currentPage)
+    : getPopularMovie(currentPage);
 }
 export async function getDetailMovie(id) {
   const detailUrl = `/movie/${id}?api_key=${API_KEY}`;
