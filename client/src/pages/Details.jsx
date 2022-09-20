@@ -71,8 +71,8 @@ export default function Details() {
           <Favorate onClick={(id, type) => a}></Favorate>
           <ul>
             {response
-              ? Object.entries(response).map(([key, value]) => (
-                  <li>
+              ? Object.entries(response).map(([key, value], index) => (
+                  <li key={index}>
                     <b style={{ fontSize: '24px' }}>{key}</b>
                     {key === 'adult' ? (
                       <CheckBox value={value}></CheckBox>
