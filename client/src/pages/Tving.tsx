@@ -99,10 +99,10 @@ export default function Tving() {
       v = 'header';
     } else if (
       scrollY >= (header!.current as HTMLElement)?.clientHeight &&
-      scrollY < movieOffset
+      scrollY < movieOffset + 10
     ) {
       v = 'movie';
-    } else if (scrollY >= movieOffset) {
+    } else if (scrollY >= movieOffset + 10) {
       v = 'tv';
     }
     setAreaName(v as string);
