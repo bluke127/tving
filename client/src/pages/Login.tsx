@@ -170,19 +170,6 @@ export default function Login() {
       console.log(e);
     }
   };
-  // const counterHandler = useSetRecoilState(countState); // 값만 변경 시키기
-  // const resetCounter = useResetRecoilState(countState); // 디폴트값으로 값 변경
-
-  // const [counter, setCoounter] = useRecoilState(countState);
-  // const currentCount = useRecoilValue(countState); // 읽기 전용!
-  // const counterHandler = useSetRecoilState(countState); // 값만 변경 시키기
-  // const resetCounter = useResetRecoilState(countState); // 디폴트값으로 값 변경
-  // const plusCount = () => {
-  //   counterHandler(pre => pre + 1);
-  // };
-  // const minusCount = () => {
-  //   counterHandler(pre => pre - 1);
-  // };
   return (
     <>
       {/* <button onClick={() => setCounter((num) => num + 1)}>+</button>
