@@ -20,13 +20,15 @@ import { css } from '@emotion/react';
 import Carousel from 'components/Carousel';
 import Search from 'components/Search';
 import ColorButton from 'components/ColorButton';
-import { useOutletContext } from 'react-router-dom';
+import { useOutletContext, useNavigate } from 'react-router-dom';
 import { unknownObj } from 'types/index';
 import Img from 'components/Img';
 
 // const Img = lazy(() => import('components/Img'));
 export default function Tving() {
   const locatedView = useOutletContext();
+  const location = useNavigate();
+
   useEffect(() => {
     //TODO:
   }, [locatedView]);
@@ -218,6 +220,7 @@ export default function Tving() {
   useEffect(() => {
     const func = async () => {
       await fetchTvList();
+      setLoading(false);
     };
     func();
   }, [tvSortType]);
@@ -247,6 +250,7 @@ export default function Tving() {
   useEffect(() => {
     const func = async () => {
       await fetchMovieList();
+      setLoading(false);
     };
     func();
   }, [movieSortType]);
@@ -258,6 +262,7 @@ export default function Tving() {
       });
     };
     setList();
+    setLoading(false);
   }, []);
   const ab = useMemo<boolean>(() => {
     return (topTvList as any[]).every(e => e.complete);
@@ -307,8 +312,10 @@ export default function Tving() {
     } else if (offset.selectedOffset === 'tv') {
       i = 2;
     }
+
     setIndex(offset.selectedOffset, i as number, 'headerEvent');
     setAreaName(offset.selectedOffset);
+    setLoading(false);
   }, [offset.selectedOffset]);
   const [warnMsg, setWarnMsg] = useState<string | null>('');
 
@@ -332,7 +339,6 @@ export default function Tving() {
   const searchEvent = useCallback(
     async (e: KeyboardEvent) => {
       let areaN = areaName;
-
       setOffset({ ...offset, selectedOffset: areaN });
       if (areaName === 'header') {
         areaN = 'movie';
@@ -403,18 +409,19 @@ export default function Tving() {
   return (
     <div className={styled.content_wrap}>
       <div style={{ width: '100px', height: '50px', position: 'fixed' }}>
-        {JSON.stringify((topTvList as any[]).map(e => e.complete)) + 'tv'}
-        {JSON.stringify((topMovieList as any[]).map(e => e.complete)) + 'movie'}
-        {JSON.stringify((topTvList as any[]).every(e => e.complete)) + 'tv'}
-        {JSON.stringify((topMovieList as any[]).every(e => e.complete)) +
-          'movie'}
         {areaName + '에러이알 넴임'}
-        {JSON.stringify(ab)}+abbbbbbbb
-        {JSON.stringify(b)}+bbbbbb
-        {JSON.stringify(offset) + '지'}
-        {wrapArrayIndex + '인텍스'}
+        {movieOffset + 'movieOffset'}
+        {tvOffset + 'tvOffset'}
+        {scrollY + 'scrollY'}
+        <Link
+          to={`/movieList/${areaName !== 'tv' ? 'movie' : 'tv'}/${
+            areaName !== 'tv' ? movieSortType : tvSortType
+          }`}
+          style={{ fontSize: '50px', color: 'blue' }}
+        >
+          {areaName}
+        </Link>
       </div>
-
       <div>
         <Search searchType={searchType} searchEvent={searchEvent}></Search>
         <Element name="movieWrap">
@@ -450,7 +457,7 @@ export default function Tving() {
                           }
                           key={i}
                         >
-                          <Link to={`/main/movie/${e!.id}`}>
+                          <Link to={`/movie/${e!.id}`}>
                             <Img
                               src={e!.backdrop_path}
                               onLoad={() => {
@@ -487,7 +494,7 @@ export default function Tving() {
                           }
                           key={i}
                         >
-                          <Link to={`/main/movie/${e!.id}`}>
+                          <Link to={`/movie/${e!.id}`}>
                             <Img
                               src={e!.backdrop_path}
                               onLoad={() => {
@@ -552,7 +559,7 @@ export default function Tving() {
                           }
                           key={i}
                         >
-                          <Link to={`/main/tv/${e!.id}`}>
+                          <Link to={`/tv/${e!.id}`}>
                             <Img
                               src={e!.backdrop_path}
                               onLoad={() => {
@@ -590,7 +597,7 @@ export default function Tving() {
                           }
                           key={i}
                         >
-                          <Link to={`/main/tv/${e!.id}`}>
+                          <Link to={`/tv/${e!.id}`}>
                             <Img
                               src={e!.backdrop_path}
                               onLoad={() => {

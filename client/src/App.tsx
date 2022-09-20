@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Start from 'pages/Login';
 import Register from 'pages/Register';
 import Layout from 'layout/Layout';
-
+import MovieList from 'pages/MovieList';
 import Details from 'pages/Details';
 import Tving from 'pages/Tving';
 import { useNavigate } from 'react-router-dom';
@@ -28,6 +28,10 @@ export default function App() {
               <Route path="" element={<Start />}></Route>
               <Route path="register" element={<Register />}></Route>
               <Route path=":type/:id" element={<Details />}></Route>
+              <Route
+                path="movieList/:category/:type"
+                element={<MovieList />}
+              ></Route>
               {/* </Route>
             <Route path="/main" element={<Layout />}> */}
               <Route path="tving" element={<Tving />}></Route>
