@@ -48,13 +48,12 @@ export default function Layout() {
   }, [loginFlag]);
   const locateView = (type: string, logoutFlag = false) => {
     setOffset({ ...offset, selectedOffset: type ?? 'header' });
-
     // if (param.pathname === '/' || param.pathname === '/register') {
     //   return location(type);
     // }
+
     if (
-      param.pathname === '/' ||
-      param.pathname === '/register' ||
+      (param.pathname === '/' || param.pathname === '/register') &&
       logoutFlag
     ) {
       return location(type);
@@ -67,12 +66,12 @@ export default function Layout() {
   useEffect(() => {
     console.log(sessionStorage.getItem('userInfo'));
     setLoginFlag(sessionStorage.getItem('userInfo') !== null);
-    if (param.pathname === '/tving') {
-      console.log(sessionStorage.getItem('userInfo'), 'userInfo');
-      if (!loginFlag) {
-        location('/');
-      }
+    // if (param.pathname === '/tving') {
+    // console.log(sessionStorage.getItem('userInfo'), 'userInfo');
+    if (!loginFlag) {
+      location('/');
     }
+    // }
     setLoading(false);
   }, []);
   useEffect(() => {
