@@ -21,60 +21,60 @@ mongoose
   })
   .then(() => console.log('MongoDB connected...'))
   .catch(e => console.log(e));
-app.get('/', (req, res) => {
-  res.send('Hello World!~~안녕하세요??');
-});
-app.post('/api/users/register', (req, res) => {
-  //회원 가입 할때 필요한 정보들을 client에서 가져오면
-  //그것들을 데이터베이스에 넣어준다
-  const user = new User(req.body);
-  User.findOne({ user_id: req.body.user_id }, (err, user) => {
-    if (user) {
-      return res.json({
-        success: false,
-        message: '이미 존재하는 아이디',
-      });
-    }
-  });
-  user.save((err, userInfo) => {
-    console.log('넘어가나확인', err, userInfo);
-    if (err) return res.json({ success: false, err });
-    return res.status(200).json({ success: true });
-  });
-});
-app.post('/api/users/login', (req, res) => {
-  //요청된 이메일을 데이터베이스에서 있는지 찾는다
-  console.log(req.body, '로그인');
-  User.findOne({ user_id: req.body.user_id }, (err, user) => {
-    if (!user) {
-      return res.json({
-        loginSuccess: false,
-        message: '제공된 아이디에 해당하는 유저가 없습니다',
-      });
-    }
-    user.comparePassword(req.body.password, (err, isMatch) => {
-      console.log(isMatch, req.body.password, '이즈');
-      if (!isMatch)
-        return res.json({
-          loginSuccess: false,
-          message: '비밀번호가 틀렸습니다',
-        });
-      //비밀번호까지 맞다면 토큰 생성하기
-      user.generateToken((err, user) => {
-        console.log(user, '유저');
-        if (err) return res.status(400).send(err);
-        //토큰을 저장한다, 어디에? 쿠키, 로컬스터리지?
-        res.cookie('x_auth', user.token).status(200).json({
-          loginSuccess: true,
-          id: user._id,
-          name: user.name,
-        });
-      });
-    });
-  });
-  //요청된 이메일이 데어터 베이스에 있다면 비밀번호가 맞는 비밀번호인지 확인
-  //비밀번호 까지 맞다면 토큰을 생성하기
-});
+// app.get('/', (req, res) => {
+//   res.send('Hello World!~~안녕하세요??');
+// });
+// app.post('/api/users/register', (req, res) => {
+//   //회원 가입 할때 필요한 정보들을 client에서 가져오면
+//   //그것들을 데이터베이스에 넣어준다
+//   const user = new User(req.body);
+//   User.findOne({ user_id: req.body.user_id }, (err, user) => {
+//     if (user) {
+//       return res.json({
+//         success: false,
+//         message: '이미 존재하는 아이디',
+//       });
+//     }
+//   });
+//   user.save((err, userInfo) => {
+//     console.log('넘어가나확인', err, userInfo);
+//     if (err) return res.json({ success: false, err });
+//     return res.status(200).json({ success: true });
+//   });
+// });
+// app.post('/api/users/login', (req, res) => {
+//   //요청된 이메일을 데이터베이스에서 있는지 찾는다
+//   console.log(req.body, '로그인');
+//   User.findOne({ user_id: req.body.user_id }, (err, user) => {
+//     if (!user) {
+//       return res.json({
+//         loginSuccess: false,
+//         message: '제공된 아이디에 해당하는 유저가 없습니다',
+//       });
+//     }
+//     user.comparePassword(req.body.password, (err, isMatch) => {
+//       console.log(isMatch, req.body.password, '이즈');
+//       if (!isMatch)
+//         return res.json({
+//           loginSuccess: false,
+//           message: '비밀번호가 틀렸습니다',
+//         });
+//       //비밀번호까지 맞다면 토큰 생성하기
+//       user.generateToken((err, user) => {
+//         console.log(user, '유저');
+//         if (err) return res.status(400).send(err);
+//         //토큰을 저장한다, 어디에? 쿠키, 로컬스터리지?
+//         res.cookie('x_auth', user.token).status(200).json({
+//           loginSuccess: true,
+//           id: user._id,
+//           name: user.name,
+//         });
+//       });
+//     });
+//   });
+//   //요청된 이메일이 데어터 베이스에 있다면 비밀번호가 맞는 비밀번호인지 확인
+//   //비밀번호 까지 맞다면 토큰을 생성하기
+// });
 
 app.get('/api/users/auth', auth, (req, res) => {
   console.log(req.user, 'm');
@@ -92,13 +92,15 @@ app.get('/api/users/auth', auth, (req, res) => {
   });
 });
 
-app.get('/api/users/logout', auth, (req, res) => {
-  console.log(req.user, 'req입니다');
-  User.findOneAndUpdate({ _id: req.user._id }, { token: '' }, (err, user) => {
-    if (err) return res.json({ success: false, err });
-    return res.status(200).send({ success: true });
-  });
-});
+// app.get('/api/users/logout', auth, (req, res) => {
+//   console.log(req.user, 'req입니다');
+//   User.findOneAndUpdate({ _id: req.user._id }, { token: '' }, (err, user) => {
+//     if (err) return res.json({ success: false, err });
+//     return res.status(200).send({ success: true });
+//   });
+// });
+app.use('/api/users', require('./routes/user.ts'));
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
