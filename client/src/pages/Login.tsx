@@ -162,7 +162,7 @@ export default function Login() {
         showModal(response.payload.message);
       } else {
         setName(response.payload.name);
-        sessionStorage.setItem('userInfo', id);
+        sessionStorage.setItem('userInfo', response.payload.id);
         setLoginFlag(true);
         context.locateView('/tving');
       }

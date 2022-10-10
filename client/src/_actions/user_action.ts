@@ -10,7 +10,7 @@ export function loginUser(dataToSubmit: any) {
     // UseAsync(
     UseFetch({
       method: 'post',
-      url: 'api/users/login',
+      url: '/api/users/login',
       data: dataToSubmit,
     });
   // );
@@ -21,7 +21,7 @@ export function loginUser(dataToSubmit: any) {
 }
 export function registerUser(dataToSubmit: any) {
   const request = UseFetch({
-    url: 'api/users/register',
+    url: '/api/users/register',
     data: dataToSubmit,
     method: 'post',
   });
@@ -33,7 +33,7 @@ export function registerUser(dataToSubmit: any) {
 
 export function logoutUser() {
   const request = UseFetch({
-    url: 'api/users/logout',
+    url: '/api/users/logout',
     method: 'get',
   });
   // axios

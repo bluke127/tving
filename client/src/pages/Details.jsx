@@ -1,13 +1,15 @@
-import { getDefaultNormalizer } from '@testing-library/react';
 import React, { Component, useEffect, useState, useCallback } from 'react';
+import { getDefaultNormalizer } from '@testing-library/react';
 import { useNavigate, useParams } from 'react-router-dom';
+import styles from 'styled/Details.module.css';
 import { getDetailTv } from 'services/tv';
 import { getDetailMovie } from 'services/movie';
-import styles from 'styled/Details.module.css';
+
 import CheckBox from 'components/CheckBox';
 import ClipLoader from 'react-spinners/ClipLoader';
-import Favorate from 'components/Favorate';
+import Favorite from 'components/Favorate';
 import { loadingState, favorateState } from '../atoms';
+
 import {
   useRecoilState,
   useRecoilValue,
@@ -45,7 +47,6 @@ export default function Details() {
   };
   const [response, setResponse] = useState();
   const [loading, setLoading] = useRecoilState(loadingState);
-  const [favorate, setFavorate] = useRecoilState(favorateState);
   useEffect(() => {
     getDetail();
     setLoading(false);
@@ -57,10 +58,6 @@ export default function Details() {
   //   if (favorate) setFavorate({ id, type });
   // }, [favorate]);
   const { type, id } = useParams();
-  const a = () => {
-    console.log(favorate);
-    setFavorate({ id, type });
-  };
 
   return (
     <>
@@ -68,7 +65,10 @@ export default function Details() {
         <ClipLoader color={color} css={override} size={150} />
       ) : (
         <div className={styles.detail_wrap}>
-          <Favorate onClick={(id, type) => a}></Favorate>
+          <Favorite
+            info={response}
+            userFrom={sessionStorage.getItem('userInfo')}
+          />
           <ul>
             {response
               ? Object.entries(response).map(([key, value], index) => (

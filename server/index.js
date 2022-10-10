@@ -99,7 +99,8 @@ app.get('/api/users/auth', auth, (req, res) => {
 //     return res.status(200).send({ success: true });
 //   });
 // });
-app.use('/api/users', require('./routes/user.ts'));
+app.use('/api/users', require('./routes/user.js'));
+app.use('/api/favorite', require('./routes/favorite.js'));
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);

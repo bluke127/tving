@@ -13,17 +13,24 @@ import styled from 'styled/Img.module.css';
 import { loadingState, headerState } from '../atoms';
 export default function Img(props: any) {
   const [loading, setLoading] = useRecoilState(loadingState);
+  const [innerLoad, setInnerLoad] = useState(false);
   const imgRef = useRef();
   useEffect(() => {
     // if (imgRef.current) setLoading(false);
+    if (imgRef.current) {
+      setLoading(false);
+      setInnerLoad(false);
+    }
     console.log('img');
   }, [imgRef.current]);
 
   useEffect(() => {
     setLoading(true);
+    setInnerLoad(true);
   }, []);
   return (
     <span className={styled.img_wrap}>
+      {innerLoad ?? '로딩'}
       {!props.isapiresponse ? (
         <img
           ref={imgRef}
