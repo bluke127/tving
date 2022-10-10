@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled/Favorate.module.css';
 import Img from 'components/Img';
@@ -19,29 +19,43 @@ import { useDispatch } from 'react-redux';
 import UseAsync from 'utill/useAsync';
 export default function Favorate(props: any) {
   const dispatch = useDispatch();
-
-  // const { movieId } = useParams();
+  const { type } = useParams();
   let variables = {
-    userFrom: props.userFrom,
+    userfrom: props.userfrom,
     // movieId: movieId,
     movieId: props.info?.id,
+    cate: type,
   };
   const [active, setActive] = useState(false);
   const activeFlag = useMemo(() => active, [active]);
-  const { execute } = UseAsync(() => dispatch(addToFavorite(variables)), false);
+  const [FavoriteNumber, setFavoriteNumber] = useState(0);
+  const setFavorite = () => {
+    if (active) {
+      // UseAsync(() =>
+      dispatch(removeFromFavorite(variables));
+      // , false).execute();
+    } else {
+      // UseAsync(() =>
+      dispatch(addToFavorite(variables));
+      // , false).execute();
+    }
+  };
+  let { execute } = UseAsync(() => dispatch(addToFavorite(variables)), false);
+  useEffect(() => {
+    const mountFunc = async () => {
+      const res = await props.handlefavorite();
+      console.log(res, 'resres');
+      setActive(res.payload.favorited);
+    };
+    mountFunc();
+  }, []);
   return (
     <>
       {activeFlag}
-      <span
-        className={styled.img}
-        onMouseEnter={() => setActive(true)}
-        onMouseLeave={() => setActive(false)}
-      >
+      <span className={styled.img} onClick={() => setFavorite()}>
         <Img
           className={styled.favorate_img}
-          {...props}
           isapiresponse={+true}
-          onClick={execute}
           src={
             !props.favorate && !activeFlag
               ? require('assets/images/favorite.svg').default

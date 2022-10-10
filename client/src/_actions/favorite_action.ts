@@ -16,7 +16,7 @@ export function favorited(dataToSubmit: any) {
     // UseAsync(
     UseFetch({
       method: 'post',
-      url: 'api/favorite/favorited',
+      url: '/api/favorite/favorited',
       data: dataToSubmit,
     });
   // );
@@ -28,7 +28,7 @@ export function favorited(dataToSubmit: any) {
 
 export function favorite_number() {
   const request = UseFetch({
-    url: 'api/favorite/favorite_number',
+    url: '/api/favorite/favorite_number',
     method: 'post',
   });
   // axios
@@ -36,10 +36,11 @@ export function favorite_number() {
   //   .then(response => response.data);
   return { type: FAVORITE_NUMBER, payload: request };
 }
-export function removeFromFavorite() {
+export function removeFromFavorite(data: any) {
   const request = UseFetch({
     url: '/api/favorite/removeFromFavorite',
     method: 'post',
+    data,
   });
   // axios
   //   .post('api/users/register', dataToSubmit)

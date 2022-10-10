@@ -5,6 +5,8 @@ import styles from 'styled/Details.module.css';
 import { getDetailTv } from 'services/tv';
 import { getDetailMovie } from 'services/movie';
 
+import { useDispatch } from 'react-redux';
+import UseAsync from 'utill/useAsync';
 import CheckBox from 'components/CheckBox';
 import ClipLoader from 'react-spinners/ClipLoader';
 import Favorite from 'components/Favorate';
@@ -19,8 +21,14 @@ import {
 import Img from 'components/Img';
 import { css } from '@emotion/react';
 import { useMemo } from 'react';
-
+import {
+  favorited,
+  favorite_number,
+  removeFromFavorite,
+  addToFavorite,
+} from '_actions/favorite_action';
 export default function Details() {
+  const dispatch = useDispatch();
   const override = css`
     display: block;
     margin: 0 auto;
@@ -48,6 +56,7 @@ export default function Details() {
   const [response, setResponse] = useState();
   const [loading, setLoading] = useRecoilState(loadingState);
   useEffect(() => {
+    setLoading(true);
     getDetail();
     setLoading(false);
   }, [loading]);
@@ -59,6 +68,19 @@ export default function Details() {
   // }, [favorate]);
   const { type, id } = useParams();
 
+  // const handlefavorite = async () => {
+  let { execute } = UseAsync(() => {
+    console.log(response, 'responses');
+    return dispatch(
+      favorited({
+        userfrom: sessionStorage.getItem('userInfo'),
+        movieId: response?.id,
+        cate: type,
+      })
+    );
+  }, false);
+  // execute();
+  // };
   return (
     <>
       {loading ? (
@@ -67,7 +89,8 @@ export default function Details() {
         <div className={styles.detail_wrap}>
           <Favorite
             info={response}
-            userFrom={sessionStorage.getItem('userInfo')}
+            userfrom={sessionStorage.getItem('userInfo')}
+            handlefavorite={() => execute()}
           />
           <ul>
             {response
