@@ -6,6 +6,7 @@ import { RecoilRoot } from 'recoil';
 import { Provider } from 'react-redux';
 import { applyMiddleware, createStore } from 'redux';
 
+import 'antd/dist/antd.css';
 import promiseMiddleware from 'redux-promise';
 
 import ReduxThunk from 'redux-thunk';

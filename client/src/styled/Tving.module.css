@@ -43,4 +43,10 @@
   border: 2px solid red;
   text-align: center;
   overflow: hidden;
+  width: 100%;
+  height: 100%;
+}
+.post img {
+  width: auto;
+  height: 100%;
 }
