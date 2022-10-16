@@ -38,7 +38,7 @@ function MoviesList() {
   };
   const loadMoreItems = () => {
     setCurrentPage(CurrentPage + 1);
-    fetchMovies(category as string, CurrentPage as string | number);
+    fetchMovies(category as string, type as string | number);
   };
   return (
     <div style={{ width: '100%', margin: '0' }}>
