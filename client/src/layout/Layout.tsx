@@ -54,12 +54,13 @@ export default function Layout() {
     // }
 
     if (
-      (param.pathname === '/' || param.pathname === '/register') &&
-      logoutFlag
+      logoutFlag ||
+      param.pathname === '/' ||
+      param.pathname === '/register'
     ) {
       return location(type);
-    } else if (param.pathname !== '/tving') {
-      location('/tving');
+    } else if (!logoutFlag) {
+      location('/');
     }
   };
   const [headerS, setHeaderS] = useRecoilState(headerState);
