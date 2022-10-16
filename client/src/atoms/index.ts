@@ -96,6 +96,15 @@ export const useInfo = atom({
   key: 'id',
   default: null,
 });
+
+export const areaNameState = atom({
+  key: 'areaName',
+  default: 'header',
+});
+export const cateState = atom({
+  key: 'cate',
+  default: 'top',
+});
 export const offsetState = atom<any>({
   key: 'offset',
   default: { movie: 0, tv: 0, selectedOffset: null },
