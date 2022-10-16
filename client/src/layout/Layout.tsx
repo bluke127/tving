@@ -47,20 +47,20 @@ export default function Layout() {
     console.log(loginFlag, '바뀌나');
     if (!loginFlag) location('/');
   }, [loginFlag]);
-  const locateView = (type: string, logoutFlag = false) => {
+  const locateView = (page: string, type: string) => {
     setOffset({ ...offset, selectedOffset: type ?? 'header' });
     // if (param.pathname === '/' || param.pathname === '/register') {
     //   return location(type);
     // }
 
-    if (
-      logoutFlag ||
-      param.pathname === '/' ||
-      param.pathname === '/register'
-    ) {
-      return location(type);
-    } else if (!logoutFlag) {
-      location('/');
+    if (loginFlag) {
+      return location(page);
+    } else if (!loginFlag) {
+      if (page === '/register') {
+        return location(page);
+      } else {
+        location('/');
+      }
     }
   };
   const [headerS, setHeaderS] = useRecoilState(headerState);
@@ -79,6 +79,12 @@ export default function Layout() {
   useEffect(() => {
     if (param.pathname !== '/tving') {
       window.scrollTo({ top: 0 });
+    }
+    if (
+      loginFlag &&
+      (param.pathname === '/' || param.pathname === '/register')
+    ) {
+      location('tving');
     }
   }, [param.pathname]);
 

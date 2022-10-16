@@ -143,7 +143,7 @@ export default function Login() {
   // };
   const { execute } = UseAsync(
     () => dispatch(loginUser({ user_id: id, password })),
-    false
+    false,
   );
 
   const login = async () => {
@@ -164,12 +164,14 @@ export default function Login() {
         setName(response.payload.name);
         sessionStorage.setItem('userInfo', response.payload.id);
         setLoginFlag(true);
-        context.locateView('/tving');
       }
     } catch (e) {
       console.log(e);
     }
   };
+  useEffect(() => {
+    if (loginFlag) context.locateView('/tving');
+  }, [loginFlag]);
   return (
     <>
       {/* <button onClick={() => setCounter((num) => num + 1)}>+</button>
