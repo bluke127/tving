@@ -45,6 +45,7 @@ export default function Layout() {
   useEffect(() => {
     setLoginFlag((sessionStorage.getItem('userInfo') !== null) as boolean);
     console.log(loginFlag, '바뀌나');
+    if (!loginFlag) location('/');
   }, [loginFlag]);
   const locateView = (type: string, logoutFlag = false) => {
     setOffset({ ...offset, selectedOffset: type ?? 'header' });

@@ -1,4 +1,6 @@
 import React, { useEffect, useState, useRef, useMemo, forwardRef } from 'react';
+
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 // import styled from 'styled/Modal.module.css';
 import {
   RecoilRoot,
@@ -32,14 +34,14 @@ export default function Img(props: any) {
     <span className={styled.img_wrap}>
       {innerLoad ?? '로딩'}
       {!props.isapiresponse ? (
-        <img
+        <LazyLoadImage
           ref={imgRef}
           {...props}
           src={`${process.env.REACT_APP_IMG_URL}${props.src}`}
           alt={props.alt}
         />
       ) : (
-        <img ref={imgRef} {...props} alt={props.alt} />
+        <LazyLoadImage ref={imgRef} {...props} alt={props.alt} />
       )}
     </span>
   );

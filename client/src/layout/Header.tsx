@@ -12,11 +12,15 @@ import {
   modalFlagState,
   modalDataState,
 } from '../atoms';
+import { useNavigate } from 'react-router-dom';
+
 import { logoutUser } from '_actions/user_action';
 import { exitCode } from 'process';
 import { useMatch } from 'react-router-dom';
 const Header = forwardRef((props: any, ref: any) => {
   const SearchImg = <div>서취</div>;
+
+  const location = useNavigate();
   const user = useRecoilValue(userIdState);
   const [loginFlag, setLoginFlag] = useRecoilState(loginFlagState);
   const [modalFlag, setModalFlagState] = useRecoilState(modalFlagState);
