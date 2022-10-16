@@ -10,6 +10,7 @@ import {
   headerState,
   modalDataState,
 } from '../atoms';
+import Banner from 'components/Banner';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { getTopMovie, getPopularMovie } from 'services/movie';
 // import { getTopMovie } from 'services/movie';
@@ -43,6 +44,8 @@ export default function Tving() {
   const [modalFlag, setModalFlagState] = useRecoilState(modalFlagState);
   const [offset, setOffset] = useRecoilState(offsetState);
   let [color, setColor] = useState('#ffffff');
+
+  const [randomContent, setRandomContent]: any = useState([]);
   //movie리스트와 tv리스트를 담아줄 useState
   const [topMovieList, setTopMovieList] = useState<unknownObj[] | null[]>([]);
   const [topTvList, setTopTvList] = useState<unknownObj[] | null[]>([]);
@@ -121,7 +124,7 @@ export default function Tving() {
           {
             top: (wrapArray[i]!.current! as HTMLElement)?.offsetTop,
             duration: 1000,
-          }
+          },
         );
       }
       if (type === 'ArrowUp') {
@@ -149,7 +152,7 @@ export default function Tving() {
         return setWrapArrayIndex(i);
       }
     },
-    [wrapArrayIndex]
+    [wrapArrayIndex],
   );
   const [placedArea, setPlacedArea] = useState({
     position: 0,
@@ -165,19 +168,15 @@ export default function Tving() {
     try {
       setLoading(true);
       const [responseMovieList, responseTvList] = await Promise.all([
-        // movieSortType === 'top' ?
-        getTopMovie(),
-        // : getPopularMovie(),
-        // tvSortType === 'top' ?
-        getTopTv(),
-        //  : getPopularTv(),
+        movieSortType === 'top' ? getTopMovie() : getPopularMovie(),
+        tvSortType === 'top' ? getTopTv() : getPopularTv(),
       ]);
       responseTvList.results.length > 0
         ? setTopTvList(
             responseTvList.results.map((e: unknownObj) => {
               e.complete = false;
               return e;
-            })
+            }),
           )
         : setTopTvList([null]);
       responseMovieList.results.length > 0
@@ -185,9 +184,15 @@ export default function Tving() {
             responseMovieList.results.map((e: unknownObj) => {
               e.complete = false;
               return e;
-            })
+            }),
           )
         : setTopMovieList([null]);
+      setRandomContentMethods(
+        randomType === 'movie'
+          ? responseMovieList.results
+          : responseTvList.results,
+      );
+      console.log(randomContent, 'radom');
     } catch (e) {
       console.log(e);
     } finally {
@@ -195,6 +200,21 @@ export default function Tving() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }, []);
+  const setRandomContentMethods = (list: any[]) => {
+    const insert = list.filter((e, index) => {
+      if (index === Math.floor(Math.random() * list.length)) {
+        return e;
+      }
+    });
+
+    setRandomContent([...insert]);
+  };
+  useEffect(() => {
+    if (!randomContent.length)
+      setRandomContentMethods(
+        randomType === 'movie' ? topMovieList : topTvList,
+      );
+  }, [randomContent]);
   const fetchTvList = useCallback(async () => {
     // window.scrollTo({ top: 0 });
     try {
@@ -210,13 +230,13 @@ export default function Tving() {
             responseTvList.results.map((e: unknownObj) => {
               e.complete = false;
               return e;
-            })
+            }),
           )
         : setTopTvList([null]);
     } catch (e) {
       console.log(e);
     }
-  }, [tvSortType]);
+  }, []);
   useEffect(() => {
     const func = async () => {
       await fetchTvList();
@@ -239,13 +259,13 @@ export default function Tving() {
             responseMovieList.results.map((e: unknownObj) => {
               e.complete = false;
               return e;
-            })
+            }),
           )
         : setTopMovieList([null]);
     } catch (e) {
       console.log(e);
     }
-  }, [movieSortType]);
+  }, []);
 
   useEffect(() => {
     const func = async () => {
@@ -260,22 +280,31 @@ export default function Tving() {
       window.scrollTo({
         top: offset[offset.selectedOffset as string] as number,
       });
+      console.log(
+        topMovieList,
+        [...topMovieList].filter((e, index) => {
+          if (index === Math.floor(Math.random() * [...topMovieList].length)) {
+            return e;
+          }
+        }),
+      );
     };
     setList();
+
     setLoading(false);
   }, []);
   const ab = useMemo<boolean>(() => {
-    return (topTvList as any[]).every(e => e.complete);
-  }, [topTvList.map(e => e!.complete)]);
+    return (topTvList as any[]).every((e) => e.complete);
+  }, [topTvList.map((e) => e!.complete)]);
   const b = useMemo<boolean>(() => {
-    return (topMovieList as any[]).every(e => e.complete);
-  }, [topMovieList.map(e => e!.complete)]);
+    return (topMovieList as any[]).every((e) => e.complete);
+  }, [topMovieList.map((e) => e!.complete)]);
   useEffect(() => {
     completeImgLoaded(
-      (topTvList as any[]).every(e => e!.complete) === true &&
-        (topMovieList as any[]).every(e => e!.complete) === true
+      (topTvList as any[]).every((e) => e!.complete) === true &&
+        (topMovieList as any[]).every((e) => e!.complete) === true,
     );
-  }, [topTvList.map(e => e!.complete), topMovieList.map(e => e!.complete)]);
+  }, [topTvList.map((e) => e!.complete), topMovieList.map((e) => e!.complete)]);
   const [slideMoveList, slideSetMovieList] = useState([]);
   const [slideTvList, slideSetTvList] = useState([]);
   const [modalData, setModalData] = useRecoilState(modalDataState);
@@ -350,7 +379,7 @@ export default function Tving() {
           setLoading(true);
           const res = await getSearchMedia(
             areaN,
-            (e.target as HTMLInputElement).value
+            (e.target as HTMLInputElement).value,
           );
           if (!res.results.length) {
             setWarnMsg('검색결과가 없다');
@@ -363,7 +392,7 @@ export default function Tving() {
                   res.results.map((e: unknownObj) => {
                     e.complete = false;
                     return e;
-                  })
+                  }),
                 )
               : setTopTvList([null]);
           } else if (areaN === 'movie') {
@@ -372,7 +401,7 @@ export default function Tving() {
                   res.results.map((e: unknownObj) => {
                     e.complete = false;
                     return e;
-                  })
+                  }),
                 )
               : setTopMovieList([null]);
           }
@@ -384,7 +413,7 @@ export default function Tving() {
         }
       }
     },
-    [tvWrap.current, movieWrap.current, areaName]
+    [tvWrap.current, movieWrap.current, areaName],
   );
 
   useEffect(() => {
@@ -393,8 +422,8 @@ export default function Tving() {
 
   const completeImgLoaded = (flag?: boolean) => {
     if (
-      (topTvList as any[]).every(e => e.complete) &&
-      (topMovieList as any[]).every(e => e.complete)
+      (topTvList as any[]).every((e) => e.complete) &&
+      (topMovieList as any[]).every((e) => e.complete)
     ) {
       setLoading(false);
     }
@@ -405,7 +434,10 @@ export default function Tving() {
     }
     completeImgLoaded();
   };
-
+  const randomType = useMemo(
+    () => (Math.floor(Math.random() * 10) % 2 === 0 ? 'movie' : 'tv'),
+    [],
+  );
   return (
     <div className={styled.content_wrap}>
       <div style={{ width: '100px', height: '50px', position: 'fixed' }}>
@@ -424,6 +456,11 @@ export default function Tving() {
       </div>
       <div>
         <Search searchType={searchType} searchEvent={searchEvent}></Search>
+        <Banner
+          list={randomContent[0] || randomContent}
+          type={randomType}
+          id={randomContent[0] ? randomContent[0]?.id : ''}
+        />
         <Element name="movieWrap">
           <div ref={movieWrap} className={styled.content}>
             <ColorButton
@@ -464,7 +501,7 @@ export default function Tving() {
                                 handleComplete(
                                   topMovieList as unknownObj[],
                                   i,
-                                  'load'
+                                  'load',
                                 );
                                 e!.complete = true;
                               }}
@@ -472,7 +509,7 @@ export default function Tving() {
                                 handleComplete(
                                   topMovieList as unknownObj[],
                                   i,
-                                  'load'
+                                  'load',
                                 );
                                 e!.complete = true;
                               }}
@@ -501,7 +538,7 @@ export default function Tving() {
                                 handleComplete(
                                   topMovieList as unknownObj[],
                                   i + Math.abs(topMovieList.length / 2),
-                                  'load'
+                                  'load',
                                 );
                                 e!.complete = true;
                               }}
@@ -509,7 +546,7 @@ export default function Tving() {
                                 handleComplete(
                                   topMovieList as unknownObj[],
                                   i + Math.abs(topMovieList.length / 2),
-                                  'load'
+                                  'load',
                                 );
                                 e!.complete = true;
                               }}
@@ -566,7 +603,7 @@ export default function Tving() {
                                 handleComplete(
                                   topTvList as unknownObj[],
                                   i,
-                                  'load'
+                                  'load',
                                 );
 
                                 e!.complete = true;
@@ -575,7 +612,7 @@ export default function Tving() {
                                 handleComplete(
                                   topTvList as unknownObj[],
                                   i,
-                                  'load'
+                                  'load',
                                 );
                                 e!.complete = true;
                               }}
@@ -604,7 +641,7 @@ export default function Tving() {
                                 handleComplete(
                                   topTvList as unknownObj[],
                                   i + Math.abs(topTvList.length / 2),
-                                  'load'
+                                  'load',
                                 );
                                 e!.complete = true;
                               }}
@@ -612,7 +649,7 @@ export default function Tving() {
                                 handleComplete(
                                   topTvList as unknownObj[],
                                   i + Math.abs(topTvList.length / 2),
-                                  'load'
+                                  'load',
                                 );
                                 e!.complete = true;
                               }}
