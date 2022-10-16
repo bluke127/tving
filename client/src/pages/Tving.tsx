@@ -7,6 +7,7 @@ import {
   offsetState,
   userIdState,
   loadingState,
+  areaNameState,
   headerState,
   modalDataState,
 } from '../atoms';
@@ -47,8 +48,8 @@ export default function Tving() {
 
   const [randomContent, setRandomContent]: any = useState([]);
   //movie리스트와 tv리스트를 담아줄 useState
-  const [topMovieList, setTopMovieList] = useState<unknownObj[] | null[]>([]);
-  const [topTvList, setTopTvList] = useState<unknownObj[] | null[]>([]);
+  const [movieList, setMovieList] = useState<unknownObj[] | null[]>([]);
+  const [tvList, setTvList] = useState<unknownObj[] | null[]>([]);
   const [popularMovieList, setPopularMovieList] = useState<
     unknownObj[] | null[]
   >([]);
@@ -58,6 +59,8 @@ export default function Tving() {
   const [tvOffset, setTvOffset] = useState<number>(0);
   const [scrollY, setScrollY] = useState<number>(0);
   const [loading, setLoading] = useRecoilState(loadingState);
+
+  const [areaName, setAreaName] = useRecoilState(areaNameState);
   const movieWrap = useRef(null);
   const tvWrap = useRef(null);
   const [wrapArrayIndex, setWrapArrayIndex] = useState<number>(0);
@@ -65,7 +68,6 @@ export default function Tving() {
   const header = useMemo<{ current: null | HTMLElement }>(() => {
     return h ? { current: h } : { current: null };
   }, [h]);
-  const [areaName, setAreaName] = useState('header');
 
   const handleScroll = (event: KeyboardEvent) => {
     event.preventDefault();
@@ -172,21 +174,21 @@ export default function Tving() {
         tvSortType === 'top' ? getTopTv() : getPopularTv(),
       ]);
       responseTvList.results.length > 0
-        ? setTopTvList(
+        ? setTvList(
             responseTvList.results.map((e: unknownObj) => {
               e.complete = false;
               return e;
             }),
           )
-        : setTopTvList([null]);
+        : setTvList([null]);
       responseMovieList.results.length > 0
-        ? setTopMovieList(
+        ? setMovieList(
             responseMovieList.results.map((e: unknownObj) => {
               e.complete = false;
               return e;
             }),
           )
-        : setTopMovieList([null]);
+        : setMovieList([null]);
       setRandomContentMethods(
         randomType === 'movie'
           ? responseMovieList.results
@@ -211,9 +213,7 @@ export default function Tving() {
   };
   useEffect(() => {
     if (!randomContent.length)
-      setRandomContentMethods(
-        randomType === 'movie' ? topMovieList : topTvList,
-      );
+      setRandomContentMethods(randomType === 'movie' ? movieList : tvList);
   }, [randomContent]);
   const fetchTvList = useCallback(async () => {
     // window.scrollTo({ top: 0 });
@@ -226,13 +226,13 @@ export default function Tving() {
         responseTvList = await getPopularTv(0);
       }
       responseTvList.results.length > 0
-        ? setTopTvList(
+        ? setTvList(
             responseTvList.results.map((e: unknownObj) => {
               e.complete = false;
               return e;
             }),
           )
-        : setTopTvList([null]);
+        : setTvList([null]);
     } catch (e) {
       console.log(e);
     }
@@ -255,13 +255,13 @@ export default function Tving() {
         responseMovieList = await getPopularMovie(0);
       }
       responseMovieList.results.length > 0
-        ? setTopMovieList(
+        ? setMovieList(
             responseMovieList.results.map((e: unknownObj) => {
               e.complete = false;
               return e;
             }),
           )
-        : setTopMovieList([null]);
+        : setMovieList([null]);
     } catch (e) {
       console.log(e);
     }
@@ -281,9 +281,9 @@ export default function Tving() {
         top: offset[offset.selectedOffset as string] as number,
       });
       console.log(
-        topMovieList,
-        [...topMovieList].filter((e, index) => {
-          if (index === Math.floor(Math.random() * [...topMovieList].length)) {
+        movieList,
+        [...movieList].filter((e, index) => {
+          if (index === Math.floor(Math.random() * [...movieList].length)) {
             return e;
           }
         }),
@@ -294,17 +294,17 @@ export default function Tving() {
     setLoading(false);
   }, []);
   const ab = useMemo<boolean>(() => {
-    return (topTvList as any[]).every((e) => e.complete);
-  }, [topTvList.map((e) => e!.complete)]);
+    return (tvList as any[]).every((e) => e.complete);
+  }, [tvList.map((e) => e!.complete)]);
   const b = useMemo<boolean>(() => {
-    return (topMovieList as any[]).every((e) => e.complete);
-  }, [topMovieList.map((e) => e!.complete)]);
+    return (movieList as any[]).every((e) => e.complete);
+  }, [movieList.map((e) => e!.complete)]);
   useEffect(() => {
     completeImgLoaded(
-      (topTvList as any[]).every((e) => e!.complete) === true &&
-        (topMovieList as any[]).every((e) => e!.complete) === true,
+      (tvList as any[]).every((e) => e!.complete) === true &&
+        (movieList as any[]).every((e) => e!.complete) === true,
     );
-  }, [topTvList.map((e) => e!.complete), topMovieList.map((e) => e!.complete)]);
+  }, [tvList.map((e) => e!.complete), movieList.map((e) => e!.complete)]);
   const [slideMoveList, slideSetMovieList] = useState([]);
   const [slideTvList, slideSetTvList] = useState([]);
   const [modalData, setModalData] = useRecoilState(modalDataState);
@@ -388,22 +388,22 @@ export default function Tving() {
           }
           if (areaN === 'tv') {
             res.results.length > 0
-              ? setTopTvList(
+              ? setTvList(
                   res.results.map((e: unknownObj) => {
                     e.complete = false;
                     return e;
                   }),
                 )
-              : setTopTvList([null]);
+              : setTvList([null]);
           } else if (areaN === 'movie') {
             res.results.length > 0
-              ? setTopMovieList(
+              ? setMovieList(
                   res.results.map((e: unknownObj) => {
                     e.complete = false;
                     return e;
                   }),
                 )
-              : setTopMovieList([null]);
+              : setMovieList([null]);
           }
           setLoading(false);
           console.log(placedArea.position);
@@ -422,8 +422,8 @@ export default function Tving() {
 
   const completeImgLoaded = (flag?: boolean) => {
     if (
-      (topTvList as any[]).every((e) => e.complete) &&
-      (topMovieList as any[]).every((e) => e.complete)
+      (tvList as any[]).every((e) => e.complete) &&
+      (movieList as any[]).every((e) => e.complete)
     ) {
       setLoading(false);
     }
@@ -480,13 +480,13 @@ export default function Tving() {
             <Carousel
               setLoading={setLoading}
               setList={slideSetMovieList}
-              list={topMovieList[0] !== null ? topMovieList.slice(0, 5) : []}
+              list={movieList[0] !== null ? movieList.slice(0, 5) : []}
             ></Carousel>
             <div className={styled.post_wrap}>
               <ul>
-                {topMovieList && topMovieList.length
-                  ? topMovieList
-                      .slice(0, Math.abs(topMovieList.length / 2))
+                {movieList && movieList.length
+                  ? movieList
+                      .slice(0, Math.abs(movieList.length / 2))
                       .map((e, i) => (
                         <li
                           className={
@@ -499,7 +499,7 @@ export default function Tving() {
                               src={e!.backdrop_path}
                               onLoad={() => {
                                 handleComplete(
-                                  topMovieList as unknownObj[],
+                                  movieList as unknownObj[],
                                   i,
                                   'load',
                                 );
@@ -507,13 +507,13 @@ export default function Tving() {
                               }}
                               onError={() => {
                                 handleComplete(
-                                  topMovieList as unknownObj[],
+                                  movieList as unknownObj[],
                                   i,
                                   'load',
                                 );
                                 e!.complete = true;
                               }}
-                              // onError={handleComplete(topMovieList, i)}
+                              // onError={handleComplete(movieList, i)}
                             />
                           </Link>
                         </li>
@@ -521,9 +521,9 @@ export default function Tving() {
                   : null}
               </ul>
               <ul>
-                {topMovieList && topMovieList.length
-                  ? topMovieList
-                      .slice(Math.abs(topMovieList.length / 2))
+                {movieList && movieList.length
+                  ? movieList
+                      .slice(Math.abs(movieList.length / 2))
                       .map((e, i) => (
                         <li
                           className={
@@ -536,23 +536,23 @@ export default function Tving() {
                               src={e!.backdrop_path}
                               onLoad={() => {
                                 handleComplete(
-                                  topMovieList as unknownObj[],
-                                  i + Math.abs(topMovieList.length / 2),
+                                  movieList as unknownObj[],
+                                  i + Math.abs(movieList.length / 2),
                                   'load',
                                 );
                                 e!.complete = true;
                               }}
                               onError={() => {
                                 handleComplete(
-                                  topMovieList as unknownObj[],
-                                  i + Math.abs(topMovieList.length / 2),
+                                  movieList as unknownObj[],
+                                  i + Math.abs(movieList.length / 2),
                                   'load',
                                 );
                                 e!.complete = true;
                               }}
                               // onError={handleComplete(
-                              //   topMovieList,
-                              //   i + Math.abs(topMovieList.length / 2)
+                              //   movieList,
+                              //   i + Math.abs(movieList.length / 2)
                               // )}
                             />
                           </Link>
@@ -582,85 +582,73 @@ export default function Tving() {
             <Carousel
               setLoading={setLoading}
               setList={slideSetTvList}
-              list={topTvList[0] !== null ? topTvList.slice(0, 5) : []}
+              list={tvList[0] !== null ? tvList.slice(0, 5) : []}
             ></Carousel>
             <div className={styled.post_wrap}>
               <ul>
-                {topTvList && topTvList.length
-                  ? topTvList
-                      .slice(0, Math.abs(topTvList.length / 2))
-                      .map((e, i) => (
-                        <li
-                          className={
-                            e!.backdrop_path ? styled.post : styled.empty_img
-                          }
-                          key={i}
-                        >
-                          <Link to={`/tv/${e!.id}`}>
-                            <Img
-                              src={e!.backdrop_path}
-                              onLoad={() => {
-                                handleComplete(
-                                  topTvList as unknownObj[],
-                                  i,
-                                  'load',
-                                );
+                {tvList && tvList.length
+                  ? tvList.slice(0, Math.abs(tvList.length / 2)).map((e, i) => (
+                      <li
+                        className={
+                          e!.backdrop_path ? styled.post : styled.empty_img
+                        }
+                        key={i}
+                      >
+                        <Link to={`/tv/${e!.id}`}>
+                          <Img
+                            src={e!.backdrop_path}
+                            onLoad={() => {
+                              handleComplete(tvList as unknownObj[], i, 'load');
 
-                                e!.complete = true;
-                              }}
-                              onError={() => {
-                                handleComplete(
-                                  topTvList as unknownObj[],
-                                  i,
-                                  'load',
-                                );
-                                e!.complete = true;
-                              }}
-                              // onError={handleComplete(topTvList, i)}
-                            />
-                          </Link>
-                        </li>
-                      ))
+                              e!.complete = true;
+                            }}
+                            onError={() => {
+                              handleComplete(tvList as unknownObj[], i, 'load');
+                              e!.complete = true;
+                            }}
+                            // onError={handleComplete(tvList, i)}
+                          />
+                        </Link>
+                      </li>
+                    ))
                   : null}
               </ul>
               <ul>
-                {topTvList && topTvList.length
-                  ? topTvList
-                      .slice(Math.abs(topTvList.length / 2))
-                      .map((e, i) => (
-                        <li
-                          className={
-                            e!.backdrop_path ? styled.post : styled.empty_img
-                          }
-                          key={i}
-                        >
-                          <Link to={`/tv/${e!.id}`}>
-                            <Img
-                              src={e!.backdrop_path}
-                              onLoad={() => {
-                                handleComplete(
-                                  topTvList as unknownObj[],
-                                  i + Math.abs(topTvList.length / 2),
-                                  'load',
-                                );
-                                e!.complete = true;
-                              }}
-                              onError={() => {
-                                handleComplete(
-                                  topTvList as unknownObj[],
-                                  i + Math.abs(topTvList.length / 2),
-                                  'load',
-                                );
-                                e!.complete = true;
-                              }}
-                              // onError={handleComplete(
-                              //   topTvList,
-                              //   i + Math.abs(topTvList.length / 2)
-                              // )}
-                            />
-                          </Link>
-                        </li>
-                      ))
+                {tvList && tvList.length
+                  ? tvList.slice(Math.abs(tvList.length / 2)).map((e, i) => (
+                      <li
+                        className={
+                          e!.backdrop_path ? styled.post : styled.empty_img
+                        }
+                        key={i}
+                      >
+                        <Link to={`/tv/${e!.id}`}>
+                          <Img
+                            src={e!.backdrop_path}
+                            onLoad={() => {
+                              handleComplete(
+                                tvList as unknownObj[],
+                                i + Math.abs(tvList.length / 2),
+                                'load',
+                              );
+                              e!.complete = true;
+                            }}
+                            onError={() => {
+                              handleComplete(
+                                tvList as unknownObj[],
+                                i + Math.abs(tvList.length / 2),
+                                'load',
+                              );
+                              e!.complete = true;
+                            }}
+                            // onError={handleComplete(
+                            //   tvList,
+                            //   i + Math.abs(tvList.length / 2)
+                            // )}
+                          />
+                        </Link>
+                      </li>
+                    ))
                   : null}
               </ul>
             </div>
