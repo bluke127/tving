@@ -70,7 +70,8 @@ export default function Layout() {
     setLoginFlag(sessionStorage.getItem('userInfo') !== null);
     // if (param.pathname === '/tving') {
     // console.log(sessionStorage.getItem('userInfo'), 'userInfo');
-    if (!loginFlag) {
+    if (!(sessionStorage.getItem('userInfo') !== null)) {
+      alert(sessionStorage.getItem('userInfo'));
       location('/');
     }
     // }

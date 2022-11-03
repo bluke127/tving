@@ -162,6 +162,8 @@ export default function Login() {
         showModal(response.payload.message);
       } else {
         setName(response.payload.name);
+
+        sessionStorage.setItem('userName', response.payload.name);
         sessionStorage.setItem('userInfo', response.payload.id);
         setLoginFlag(true);
       }

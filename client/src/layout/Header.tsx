@@ -37,11 +37,14 @@ const Header = forwardRef((props: any, ref: any) => {
     const res = await execute();
     console.log(res);
     sessionStorage.removeItem('userInfo');
+
+    sessionStorage.removeItem('userName');
     setUserName('');
     setModalMsg('로그아웃됨');
 
     setModalData({
       ...modalData,
+      message: '로그아웃됨',
       warnMsg: null,
       button: [
         {
@@ -111,7 +114,7 @@ const Header = forwardRef((props: any, ref: any) => {
             Tv
           </li>
           <li>저장리스트</li>
-          <li>{userName} 님 환영합니다.</li>
+          <li>{sessionStorage.getItem('userName')} 님 환영합니다.</li>
           <li onClick={() => logout()}>로그아웃</li>
         </ul>
       ) : (

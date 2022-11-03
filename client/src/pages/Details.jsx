@@ -54,12 +54,15 @@ export default function Details() {
     setResponse(res);
   };
   const [response, setResponse] = useState();
-  const [loading, setLoading] = useRecoilState(loadingState);
+  // const [loading, setLoading] = useRecoilState(loadingState);
   useEffect(() => {
-    setLoading(true);
-    getDetail();
-    setLoading(false);
-  }, [loading]);
+    if (!response) {
+      const func = async () => {
+        await getDetail();
+      };
+      func();
+    }
+  }, []);
   const currentFavorateState = useMemo(() => {
     // favorate.includes();
   });
@@ -92,34 +95,34 @@ export default function Details() {
   // };
   return (
     <>
-      {loading ? (
-        <ClipLoader color={color} css={override} size={150} />
-      ) : (
-        <div className={styles.detail_wrap}>
-          <Favorite
-            info={response}
-            userfrom={sessionStorage.getItem('userInfo')}
-            handlefavorite={() => execute()}
-          />
-          <ul>
-            {response
-              ? Object.entries(response).map(([key, value], index) => (
-                  <li key={index}>
-                    <b style={{ fontSize: '24px' }}>{key}</b>
-                    {key === 'adult' ? (
-                      <CheckBox value={value}></CheckBox>
-                    ) : key === 'backdrop_path' ? (
-                      <Img src={value} />
-                    ) : value && !dontShow.includes(value) ? (
-                      JSON.stringify(value)
-                    ) : (
-                      ''
-                    )}
-                  </li>
-                ))
-              : null}
-          </ul>
-        </div>
+      {/* {loading ? ( 
+        // <ClipLoader color={color} css={override} size={150} />
+      : ( */}
+      <div className={styles.detail_wrap}>
+        <Favorite
+          info={response}
+          userfrom={sessionStorage.getItem('userInfo')}
+          handlefavorite={() => execute()}
+        />
+        <ul>
+          {response
+            ? Object.entries(response).map(([key, value], index) => (
+                <li key={index}>
+                  <b style={{ fontSize: '24px' }}>{key}</b>
+                  {key === 'adult' ? (
+                    <CheckBox value={value}></CheckBox>
+                  ) : key === 'backdrop_path' ? (
+                    <Img src={value} />
+                  ) : value && !dontShow.includes(value) ? (
+                    JSON.stringify(value)
+                  ) : (
+                    ''
+                  )}
+                </li>
+              ))
+            : null}
+        </ul>
+      </div>
       )}
     </>
   );
