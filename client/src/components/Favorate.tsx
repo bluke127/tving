@@ -17,6 +17,7 @@ import {
 } from '_actions/favorite_action';
 import { useDispatch } from 'react-redux';
 import UseAsync from 'utill/useAsync';
+export default function Favorite(props: any) {
   const dispatch = useDispatch();
   const { type } = useParams();
   let variables = {
@@ -72,4 +73,4 @@ import UseAsync from 'utill/useAsync';
       </span>
     </>
   );
-});
+}

@@ -216,12 +216,12 @@ export default function Tving() {
     if (!randomContent.length)
       setRandomContentMethods(randomType === 'movie' ? movieList : tvList);
   }, [randomContent]);
-  const fetchTvList = useCallback(async () => {
+  const fetchTvList = useCallback(async (type?: string) => {
     // window.scrollTo({ top: 0 });
     try {
       setLoading(true);
       let responseTvList;
-      if (tvSortType === 'top') {
+      if (type ? type === 'top' : tvSortType === 'top') {
         responseTvList = await getTopTv(0);
       } else {
         responseTvList = await getPopularTv(0);
@@ -234,23 +234,19 @@ export default function Tving() {
             }),
           )
         : setTvList([null]);
+      setLoading(false);
     } catch (e) {
       console.log(e);
     }
   }, []);
-  useEffect(() => {
-    const func = async () => {
-      await fetchTvList();
-      setLoading(false);
-    };
-    func();
-  }, [tvSortType]);
-  const fetchMovieList = useCallback(async () => {
+
+  const fetchMovieList = useCallback(async (type?: string) => {
     // window.scrollTo({ top: 0 });
     try {
       setLoading(true);
       let responseMovieList;
-      if (movieSortType === 'top') {
+
+      if (type ? type === 'top' : movieSortType === 'top') {
         responseMovieList = await getTopMovie(0);
       } else {
         responseMovieList = await getPopularMovie(0);
@@ -263,18 +259,30 @@ export default function Tving() {
             }),
           )
         : setMovieList([null]);
+      setLoading(false);
     } catch (e) {
       console.log(e);
     }
   }, []);
 
-  useEffect(() => {
-    const func = async () => {
-      await fetchMovieList();
-      setLoading(false);
-    };
-    func();
-  }, [movieSortType]);
+  // useEffect(() => {
+  //   const func = async () => {
+  //     await fetchMovieList();
+  //     setLoading(false);
+  //   };
+  //   func();
+  // }, [movieSortType]);
+
+  const changeTvType = async (type: string) => {
+    setCate(type);
+    setMovieSortType(type);
+    await fetchTvList(type);
+  };
+  const changeMovieType = async (type: string) => {
+    setCate(type);
+    setMovieSortType(type);
+    await fetchMovieList(type);
+  };
   useEffect(() => {
     const setList = async () => {
       await fetchList();
@@ -458,16 +466,14 @@ export default function Tving() {
           <div ref={movieWrap} className={styled.content}>
             <ColorButton
               onClick={() => {
-                setCate('top');
-                setMovieSortType('top');
+                changeMovieType('top');
               }}
             >
               인기순
             </ColorButton>
             <ColorButton
               onClick={() => {
-                setCate('popular');
-                setMovieSortType('popular');
+                changeMovieType('popular');
               }}
             >
               최신순
@@ -562,16 +568,14 @@ export default function Tving() {
           <div ref={tvWrap} className={styled.content}>
             <ColorButton
               onClick={() => {
-                setCate('top');
-                setTvSortType('top');
+                changeTvType('top');
               }}
             >
               인기순
             </ColorButton>
             <ColorButton
               onClick={() => {
-                setCate('popular');
-                setTvSortType('popular');
+                changeTvType('popular');
               }}
             >
               최신순
