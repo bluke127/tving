@@ -8,6 +8,7 @@ import {
   userIdState,
   loadingState,
   areaNameState,
+  cateState,
   headerState,
   modalDataState,
 } from '../atoms';
@@ -164,7 +165,7 @@ export default function Tving() {
   const [pageOffset, setPageOffset] = useState(0);
   const [movieSortType, setMovieSortType] = useState('top');
   const [tvSortType, setTvSortType] = useState('top');
-
+  const [cate, setCate] = useRecoilState(cateState);
   const fetchList = useCallback(async () => {
     window.scrollTo({ top: 0 });
     try {
@@ -308,15 +309,7 @@ export default function Tving() {
   const [slideMoveList, slideSetMovieList] = useState([]);
   const [slideTvList, slideSetTvList] = useState([]);
   const [modalData, setModalData] = useRecoilState(modalDataState);
-  useEffect(() => {
-    console.log(tvWrap, movieWrap, 200);
-
-    // setWrapArrayIndex(wrapArrayIndex);
-    // if (tvWrap.current && movieWrap.current) {
-    //   window.addEventListener('keyup', handleScroll);
-    // }
-    // return () => window.removeEventListener('keyup', handleScroll);
-  }, [tvWrap.current, movieWrap.current]);
+  useEffect(() => {}, [tvWrap.current, movieWrap.current]);
 
   useEffect(() => {
     if (movieWrap && movieWrap.current) {
@@ -465,6 +458,7 @@ export default function Tving() {
           <div ref={movieWrap} className={styled.content}>
             <ColorButton
               onClick={() => {
+                setCate('top');
                 setMovieSortType('top');
               }}
             >
@@ -472,6 +466,7 @@ export default function Tving() {
             </ColorButton>
             <ColorButton
               onClick={() => {
+                setCate('popular');
                 setMovieSortType('popular');
               }}
             >
@@ -567,6 +562,7 @@ export default function Tving() {
           <div ref={tvWrap} className={styled.content}>
             <ColorButton
               onClick={() => {
+                setCate('top');
                 setTvSortType('top');
               }}
             >
@@ -574,6 +570,7 @@ export default function Tving() {
             </ColorButton>
             <ColorButton
               onClick={() => {
+                setCate('popular');
                 setTvSortType('popular');
               }}
             >

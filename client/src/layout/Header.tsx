@@ -11,12 +11,14 @@ import {
   userNameState,
   modalFlagState,
   modalDataState,
+  cateState,
 } from '../atoms';
 import { useNavigate } from 'react-router-dom';
 
 import { logoutUser } from '_actions/user_action';
 import { exitCode } from 'process';
 import { useMatch } from 'react-router-dom';
+
 const Header = forwardRef((props: any, ref: any) => {
   const SearchImg = <div>서취</div>;
 
@@ -24,6 +26,8 @@ const Header = forwardRef((props: any, ref: any) => {
   const user = useRecoilValue(userIdState);
   const [loginFlag, setLoginFlag] = useRecoilState(loginFlagState);
   const [modalFlag, setModalFlagState] = useRecoilState(modalFlagState);
+
+  const [cate, setCate] = useRecoilState(cateState);
   const [userName, setUserName] = useRecoilState(userNameState);
   const [modalMsg, setModalMsg] = useState('');
 
@@ -35,7 +39,24 @@ const Header = forwardRef((props: any, ref: any) => {
     sessionStorage.removeItem('userInfo');
     setUserName('');
     setModalMsg('로그아웃됨');
-    return setModalFlagState(true);
+
+    setModalData({
+      ...modalData,
+      warnMsg: null,
+      button: [
+        {
+          text: '확인',
+          backgroundColor: 'blue',
+          color: '#fff',
+          func: () => {
+            console.log(props, 'props');
+            props.locateView('/', '');
+            setLoginFlag(false);
+          },
+        },
+      ],
+    });
+    setModalFlagState(true);
   };
   const [modalData, setModalData] = useRecoilState(modalDataState);
   const getModalData = useMemo(() => {
@@ -49,7 +70,7 @@ const Header = forwardRef((props: any, ref: any) => {
           color: '#fff',
           func: () => {
             console.log(props, 'props');
-            props.locateView('', true);
+            props.locateView('/tving', '');
             setLoginFlag(false);
           },
         },
@@ -69,9 +90,26 @@ const Header = forwardRef((props: any, ref: any) => {
         <ul>
           <li>
             <h1>Tving</h1>
+            {props.param.pathname}
           </li>
-          <li onClick={() => props.locateView('movie')}>영화</li>
-          <li onClick={() => props.locateView('tv')}>Tv</li>
+          <li
+            onClick={() =>
+              props.param.pathname !== '/tving'
+                ? props.locateView('/tving', 'movie')
+                : location(`/movieList/movie/${cate}`)
+            }
+          >
+            영화
+          </li>
+          <li
+            onClick={() =>
+              props.param.pathname !== '/tving'
+                ? props.locateView('/tving', 'tv')
+                : location(`/movieList/tv/${cate}`)
+            }
+          >
+            Tv
+          </li>
           <li>저장리스트</li>
           <li>{userName} 님 환영합니다.</li>
           <li onClick={() => logout()}>로그아웃</li>
@@ -79,9 +117,9 @@ const Header = forwardRef((props: any, ref: any) => {
       ) : (
         <ul>
           {props.param.pathname !== '/' ? (
-            <li onClick={() => props.locateView('')}>로그인</li>
+            <li onClick={() => props.locateView('/')}>로그인</li>
           ) : (
-            <li onClick={() => props.locateView('register')}>회원가입</li>
+            <li onClick={() => props.locateView('/register')}>회원가입</li>
           )}
         </ul>
       )}

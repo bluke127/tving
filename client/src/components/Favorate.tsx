@@ -17,7 +17,6 @@ import {
 } from '_actions/favorite_action';
 import { useDispatch } from 'react-redux';
 import UseAsync from 'utill/useAsync';
-export default function Favorate(props: any) {
   const dispatch = useDispatch();
   const { type } = useParams();
   let variables = {
@@ -28,31 +27,39 @@ export default function Favorate(props: any) {
   };
   const [active, setActive] = useState(false);
   const activeFlag = useMemo(() => active, [active]);
-  const [FavoriteNumber, setFavoriteNumber] = useState(0);
-  const setFavorite = () => {
+  const [favoriteNumber, setFavoriteNumber] = useState(0);
+  const setFavorite = async () => {
     if (active) {
       // UseAsync(() =>
-      dispatch(removeFromFavorite(variables));
-      // , false).execute();
+      alert(favoriteNumber);
+      await dispatch(removeFromFavorite(variables));
+      setActive(!active);
+      setFavoriteNumber((prev) => (prev = prev - 1));
     } else {
-      // UseAsync(() =>
-      dispatch(addToFavorite(variables));
-      // , false).execute();
+      await dispatch(addToFavorite(variables));
+      setActive(!active);
+      setFavoriteNumber((prev) => (prev = prev + 1));
     }
   };
   let { execute } = UseAsync(() => dispatch(addToFavorite(variables)), false);
   useEffect(() => {
     const mountFunc = async () => {
+      if (!props.info) {
+        return;
+      }
+      console.log(props.handlefavorite, props.info, props.userfrom, '?');
       const res = await props.handlefavorite();
       console.log(res, 'resres');
-      setActive(res.payload.favorited);
+      setActive(res.favorited.payload.favorited);
+      setFavoriteNumber(res.favoriteNumber.payload.favoriteNumber);
     };
     mountFunc();
   }, []);
   return (
     <>
-      {activeFlag}
+      {activeFlag + '멈니까'}
       <span className={styled.img} onClick={() => setFavorite()}>
+        {favoriteNumber}
         <Img
           className={styled.favorate_img}
           isapiresponse={+true}
@@ -65,4 +72,4 @@ export default function Favorate(props: any) {
       </span>
     </>
   );
-}
+});

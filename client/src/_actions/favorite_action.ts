@@ -26,10 +26,11 @@ export function favorited(dataToSubmit: any) {
   return { type: FAVORITED, payload: request };
 }
 
-export function favorite_number() {
-  const request = UseFetch({
-    url: '/api/favorite/favorite_number',
+export async function favorite_number(dataToSubmit: any) {
+  const request = await UseFetch({
+    url: '/api/favorite/favoriteNumber',
     method: 'post',
+    data: dataToSubmit,
   });
   // axios
   //   .post('api/users/register', dataToSubmit)

@@ -69,15 +69,24 @@ export default function Details() {
   const { type, id } = useParams();
 
   // const handlefavorite = async () => {
-  let { execute } = UseAsync(() => {
+  let { execute } = UseAsync(async () => {
     console.log(response, 'responses');
-    return dispatch(
-      favorited({
-        userfrom: sessionStorage.getItem('userInfo'),
-        movieId: response?.id,
-        cate: type,
-      })
-    );
+    return {
+      favorited: await dispatch(
+        favorited({
+          userfrom: sessionStorage.getItem('userInfo'),
+          movieId: response?.id,
+          cate: type,
+        }),
+      ),
+      favoriteNumber: await dispatch(
+        favorite_number({
+          userfrom: sessionStorage.getItem('userInfo'),
+          movieId: response?.id,
+          cate: type,
+        }),
+      ),
+    };
   }, false);
   // execute();
   // };
