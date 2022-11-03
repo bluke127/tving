@@ -9,17 +9,18 @@ const favoriteSchema = mongoose.Schema(
     movieId: {
       type: String,
     },
-    movieTitle: {
-      type: String,
-    },
-    moviePost: {
-      type: String,
-    },
-    movieRunTime: {
-      type: String,
-    },
+    // movieTitle: {
+    //   type: String,
+    // },
+    // moviePost: {
+    //   type: String,
+    // },
+    // movieRunTime: {
+    //   type: String,
+    // },
+    movieInfo: { type: Object },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Favorite = mongoose.model('Favorite', favoriteSchema);
