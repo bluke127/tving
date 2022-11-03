@@ -113,7 +113,7 @@ const Header = forwardRef((props: any, ref: any) => {
           >
             Tv
           </li>
-          <li>저장리스트</li>
+          <li onClick={() => location(`/favorited`)}>저장리스트</li>
           <li>{sessionStorage.getItem('userName')} 님 환영합니다.</li>
           <li onClick={() => logout()}>로그아웃</li>
         </ul>

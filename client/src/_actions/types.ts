@@ -5,4 +5,4 @@ export const FAVORITED = 'favorited';
 export const FAVORITE_NUMBER = 'favorite_number';
 export const REMOVE_FAVORITE = 'removeFromFavorite';
 export const ADD_FAVORITE = 'addToFavorite';
-export const GET_FAVORITE = 'getFavoredMovie';
+export const GET_FAVORITE = 'getFavoritedMovie';

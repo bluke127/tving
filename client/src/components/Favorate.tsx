@@ -24,6 +24,7 @@ export default function Favorite(props: any) {
     userfrom: props.userfrom,
     // movieId: movieId,
     movieId: props.info?.id,
+    movieInfo: props.info,
     cate: type,
   };
   const [active, setActive] = useState(false);
@@ -55,7 +56,7 @@ export default function Favorite(props: any) {
       setFavoriteNumber(res.favoriteNumber.payload.favoriteNumber);
     };
     mountFunc();
-  }, []);
+  }, [props.info]);
   return (
     <>
       {activeFlag + '멈니까'}

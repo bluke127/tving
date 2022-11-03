@@ -59,10 +59,11 @@ export function addToFavorite(data: any) {
   //   .then(response => response.data);
   return { type: ADD_FAVORITE, payload: request };
 }
-export function getFavoredMovie() {
+export function getFavoritedMovie(data: any) {
   const request = UseFetch({
-    url: '/api/favorite/getFavoredMovie',
+    url: '/api/favorite/getFavoritedMovie',
     method: 'post',
+    data: data,
   });
   // axios
   //   .post('api/users/register', dataToSubmit)

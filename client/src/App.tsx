@@ -6,6 +6,7 @@ import Layout from 'layout/Layout';
 import MovieList from 'pages/MovieList';
 import Details from 'pages/Details';
 import Tving from 'pages/Tving';
+import Favorites from 'pages/Favorites';
 import { useNavigate } from 'react-router-dom';
 import NotFound from 'pages/NotFound';
 import { modalFlagState, countState, userIdState, headerState } from './atoms';
@@ -28,6 +29,7 @@ export default function App() {
               <Route path="" element={<Start />}></Route>
               <Route path="register" element={<Register />}></Route>
               <Route path=":type/:id" element={<Details />}></Route>
+              <Route path="favorited" element={<Favorites />}></Route>
               <Route
                 path="movieList/:category/:type"
                 element={<MovieList />}
