@@ -203,6 +203,14 @@ export default function Tving() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }, []);
+  const [searchKeyword, setSearchkeword] = useState('');
+  const handleSearchkeword = (event: KeyboardEvent | string) => {
+    if (typeof event == 'string') {
+      setSearchkeword('');
+      return;
+    }
+    setSearchkeword((event.target as HTMLInputElement).value);
+  };
   const setRandomContentMethods = (list: any[]) => {
     const insert = list.filter((e, index) => {
       if (index === Math.floor(Math.random() * list.length)) {
@@ -276,11 +284,13 @@ export default function Tving() {
   const changeTvType = async (type: string) => {
     setCate(type);
     setMovieSortType(type);
+    handleSearchkeword('reset');
     await fetchTvList(type);
   };
   const changeMovieType = async (type: string) => {
     setCate(type);
     setMovieSortType(type);
+    handleSearchkeword('reset');
     await fetchMovieList(type);
   };
   useEffect(() => {
@@ -302,6 +312,7 @@ export default function Tving() {
 
     setLoading(false);
   }, []);
+
   const ab = useMemo<boolean>(() => {
     return (tvList as any[]).every((e) => e.complete);
   }, [tvList.map((e) => e!.complete)]);
@@ -367,13 +378,16 @@ export default function Tving() {
     setModalData(getModalData);
   }, [getModalData]);
   const searchEvent = useCallback(
-    async (e: KeyboardEvent) => {
+    async (e: KeyboardEvent | string) => {
       let areaN = areaName;
       setOffset({ ...offset, selectedOffset: areaN });
       if (areaName === 'header') {
         areaN = 'movie';
       }
-
+      if (typeof e === 'string') {
+        await getSearchMedia(areaN, '');
+        return;
+      }
       if (e.key === 'Enter') {
         try {
           console.log(wrapArray + 'enter');
@@ -456,7 +470,12 @@ export default function Tving() {
         </Link>
       </div>
       <div>
-        <Search searchType={searchType} searchEvent={searchEvent}></Search>
+        <Search
+          searchType={searchType}
+          handleSearchkeword={handleSearchkeword}
+          searchKeyword={searchKeyword}
+          searchEvent={searchEvent}
+        ></Search>
         <Banner
           list={randomContent[0] || randomContent}
           type={randomType}

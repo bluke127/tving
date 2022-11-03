@@ -16,8 +16,12 @@ import {
   useResetRecoilState,
 } from 'recoil';
 import BaseInput from 'components/BaseInput';
-export default function Search({ searchType, searchEvent }) {
-  const [searchKeyword, setSetkeword] = useState('');
+export default function Search({
+  searchType,
+  handleSearchkeword,
+  searchKeyword,
+  searchEvent,
+}) {
   const [searchWidth, setSearchWidth] = useState(0);
   const setWidth = () => {
     searchWidth !== 0 ? setSearchWidth(0) : setSearchWidth('150px');
@@ -35,7 +39,7 @@ export default function Search({ searchType, searchEvent }) {
         style={{ width: searchWidth }}
         value={searchKeyword}
         className={styled.search_input}
-        onInput={event => setSetkeword(event.target.value)}
+        onInput={handleSearchkeword}
         onKeyPress={searchEvent}
       ></BaseInput>
     </div>
